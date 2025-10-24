@@ -1,6 +1,6 @@
 import express from "express";
 import { authenticate } from "../middleware/auth.js";
-import { createSchoolAdmin } from "../models/user.js";
+import { createSchoolAdmin } from "../models/admin.js";
 
 const router = express.Router();
 
