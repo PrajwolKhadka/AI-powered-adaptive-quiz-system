@@ -38,3 +38,5 @@ pnpm-debug.log*
 
 # Tailwind generated files (optional, if you generate CSS)
 frontend/src/output.css
+
+backend/superpasshass.js

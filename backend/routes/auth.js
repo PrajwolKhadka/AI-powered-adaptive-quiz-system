@@ -24,9 +24,9 @@ router.post("/login", async (req, res) => {
 
     const user = result.rows[0];
 
-    // const valid = await bcrypt.compare(password, user.password);
-    // if (!valid) return res.status(401).json({ msg: "Invalid password" });
-    if (password !== user.password) return res.status(401).json({ msg: "Invalid password" });
+    const valid = await bcrypt.compare(password, user.password);
+    if (!valid) return res.status(401).json({ msg: "Invalid password" });
+    // if (password !== user.password) return res.status(401).json({ msg: "Invalid password" });
 
     const token = jwt.sign(
       { id: user.id, role: user.role },
@@ -34,7 +34,7 @@ router.post("/login", async (req, res) => {
       { expiresIn: "1h" }
     );
 
-    res.json({ token });
+    res.json({ token , role: user.role});
   } catch (err) {
     console.error(err);
     res.status(500).json({ msg: "Server error" });
