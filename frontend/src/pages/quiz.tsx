@@ -61,28 +61,30 @@ import type React from "react"
 import { useEffect, useRef, useState } from "react"
 import QuestionCard from "../components/questioncard.tsx"
 // import { fetchQuestion, submitResult } from "../api/api.ts";
-const extractStrengths = (text: string) => {
-  const match = text.match(/Strengths[:\s]*(.*?)(?=Weaknesses|Tips|$)/i);
-  return match ? match[1] : "N/A";
-};
+// const extractStrengths = (text: string) => {
+//   const match = text.match(/Strengths[:\s]*(.*?)(?=Weaknesses|Tips|$)/i);
+//   return match ? match[1] : "N/A";
+// };
 
-const extractWeaknesses = (text: string) => {
-  const match = text.match(/Weaknesses[:\s]*(.*?)(?=Tips|$)/i);
-  return match ? match[1] : "N/A";
-};
+// const extractWeaknesses = (text: string) => {
+//   const match = text.match(/Weaknesses[:\s]*(.*?)(?=Tips|$)/i);
+//   return match ? match[1] : "N/A";
+// };
 
-const extractTip = (text: string) => {
-  const match = text.match(/Tips[:\s]*(.*)/i);
-  return match ? match[1] : "Keep practicing and stay consistent!";
-};
+// const extractTip = (text: string) => {
+//   const match = text.match(/Tips[:\s]*(.*)/i);
+//   return match ? match[1] : "Keep practicing and stay consistent!";
+// };
 interface AnswerType {
   question: string
   correct: boolean
 }
 
 const TOTAL_QUESTIONS = 15
-
-const Quiz: React.FC = () => {
+interface QuizProps {
+  student: { id: number; name: string; school_id: number };
+}
+const Quiz: React.FC<QuizProps> = ({student}) => {
   const [currentQuestion, setCurrentQuestion] = useState<any>(null)
   const [questionNumber, setQuestionNumber] = useState(1)
   const [score, setScore] = useState(0)
@@ -215,7 +217,7 @@ const Quiz: React.FC = () => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        userId: 1,
+        userId: student.id,
         score,
         psychometric: data.evaluation,
       }),

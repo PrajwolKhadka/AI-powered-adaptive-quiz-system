@@ -7,6 +7,7 @@ import questionRoutes from "./routes/questions.js";
 import resultRoutes from "./routes/result.js";
 import adminRoutes from "./routes/admin.js";
 import psychometricRouter from "./routes/psychometric.js";
+import studentRouter from "./routes/student.js";
 dotenv.config();
 const app = express();
 const geminiApiKey = process.env.GEMINI_API_KEY;
@@ -25,6 +26,7 @@ app.use("/api/question",questionRoutes);
 app.use("/api/result",resultRoutes);
 app.use("/api/admin",adminRoutes);
 app.use("/api/psycho",psychometricRouter);
+app.use("/api/student",studentRouter);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

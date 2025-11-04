@@ -15,7 +15,7 @@ type DecodedToken = {
 
 const App: React.FC = () => {
   const [user, setUser] = useState<DecodedToken | null>(null);
-
+  
   // Check token on app load
   // useEffect(() => {
   //   const token = localStorage.getItem("token");
@@ -132,7 +132,7 @@ const App: React.FC = () => {
         {/* Quiz (normal users) */}
         <Route
           path="/quiz"
-          element={<ProtectedRoute element={<Quiz />} allowedRoles={["student"]} />}
+          element={<ProtectedRoute element={<Quiz student={{id: user?.id!, name:"", school_id: 0}}/>} allowedRoles={["student"]} />}
         />
 
         {/* Admin */}

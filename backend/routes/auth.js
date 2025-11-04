@@ -29,7 +29,7 @@ router.post("/login", async (req, res) => {
     // if (password !== user.password) return res.status(401).json({ msg: "Invalid password" });
 
     const token = jwt.sign(
-      { id: user.id, role: user.role },
+      { id: user.id, role: user.role, school_id: user.school_id},
       JWT_SECRET,
       { expiresIn: "1h" }
     );
