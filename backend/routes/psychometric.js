@@ -57,7 +57,7 @@ async function generateEvaluation(prompt) {
       console.error("GenAI error:", err.message || err);
       if (err.status === 503) {
         attempt++;
-        const waitTime = 1000 * 2 ** attempt; // 2s, 4s, 8s
+        const waitTime = 1000 * 2 ** attempt;
         console.log(`Model overloaded, retrying in ${waitTime}ms...`);
         await new Promise(res => setTimeout(res, waitTime));
       } else {
@@ -65,7 +65,6 @@ async function generateEvaluation(prompt) {
       }
     }
   }
-  // Fallback evaluation if API keeps failing
   return "Strengths: Good focus. Weaknesses: Needs improvement in problem-solving. Tips: Keep practicing consistently.";
 }
 
