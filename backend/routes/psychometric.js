@@ -47,11 +47,20 @@ async function generateEvaluation(prompt) {
   let attempt = 0;
   while (attempt < MAX_RETRIES) {
     try {
-      const response = await client.models.generateContent({
-        model: "gemini-2.5-pro",
+      const response = await client.models.generateContentStream({
+        // model: "gemini-2.5-pro",
+        model: "gemini-2.0-flash",
         contents: prompt,
       });
-      return response.text;
+      // return response.text;
+
+      let finalText = "";
+      for await (const chunk of response.stream) {
+        const text = chunk?.text();
+        if (text) finalText += text;
+      }
+
+      return finalText;
     } catch (err) {
 
       console.error("GenAI error:", err.message || err);
@@ -74,11 +83,10 @@ router.post("/", async (req, res) => {
   const prompt = `
     You are an AI psychometric evaluator. 
     Analyze the student's quiz answers and difficulty levels.
-    Provide an evaluation in terms of:
-    - Cognitive skills
+    Provide a brief and precise evaluation in terms of:
     - Problem-solving ability
     - Adaptability
-    - Persistence
+    - Suggestions
     Use the following data: 
     ${JSON.stringify({ answers, difficultyLevels, totalScore })}
   `;
