@@ -1,37 +1,15 @@
 import express from "express";
-import { getQuestionsByDifficulty, seedQuestions } from "../models/question.js";
+import { addQuestion, getQuestions, updateQuestion, deleteQuestion } from "../controller/questionController.js";
+import { schoolAuth } from "../middleware/school.js";
 
 const router = express.Router();
 
-// GET /api/question?difficulty=easy
-router.get("/", async (req, res) => {
-  const { difficulty, excludeIds } = req.query;
+router.post("/", schoolAuth, addQuestion);
 
-  let excludeArray = [];
-  if (excludeIds) {
-    excludeArray = excludeIds.split(",").map(id => parseInt(id));
-  }
+router.get("/", schoolAuth, getQuestions);
 
-  try {
-    const question = await getQuestionsByDifficulty(difficulty, excludeArray);
-    if (!question) return res.status(404).json({ msg: "No more questions" });
-    res.json(question);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ msg: "Server error" });
-  }
-});
+router.put("/:id", schoolAuth, updateQuestion);
 
-// POST /api/question/seed  (optional, for seeding new questions)
-router.post("/seed", async (req, res) => {
-  const questions = req.body.questions; // array of questions
-  try {
-    await seedQuestions(questions);
-    res.json({ msg: "Questions seeded successfully" });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ msg: "Server error" });
-  }
-});
+router.delete("/:id", schoolAuth, deleteQuestion);
 
 export default router;
