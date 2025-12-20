@@ -37,7 +37,7 @@ const schoolSchema = new Schema(
   { timestamps: true }
 );
 
-const SchoolModel = model("School", schoolSchema);
+export const SchoolModel = model("School", schoolSchema);
 
 export const SchoolRepository = {
   create: (data: any) => SchoolModel.create(data),
@@ -54,4 +54,12 @@ export const SchoolRepository = {
       { status: SchoolStatus.VERIFIED },
       { new: true }
     ),
+
+    rejectById: (id: string) =>
+    SchoolModel.findByIdAndUpdate(
+    id,
+    { status: SchoolStatus.REJECTED },
+    { new: true }
+  ),
 };
+
