@@ -3,8 +3,6 @@ import jwt from "jsonwebtoken";
 import { SchoolRepository } from "../repositories/school.repository";
 import { SchoolStatus } from "../types/school.types";
 
-const SUPERADMIN_EMAIL = process.env.SUPERADMIN_EMAIL!;
-const SUPERADMIN_PASSWORD = process.env.SUPERADMIN_PASSWORD!;
 
 export const AuthService = {
   async registerSchool(data: any) {
@@ -20,19 +18,6 @@ export const AuthService = {
   },
 
   async login(email: string, password: string) {
-    if (email === SUPERADMIN_EMAIL) {
-      if (password !== SUPERADMIN_PASSWORD)
-        throw new Error("Invalid credentials");
-
-      return {
-        role: "SUPERADMIN",
-        token: jwt.sign(
-          { role: "SUPERADMIN" },
-          process.env.JWT_SECRET!
-        ),
-      };
-    }
-
     const school = await SchoolRepository.findByEmail(email);
     if (!school) throw new Error("Invalid credentials");
 

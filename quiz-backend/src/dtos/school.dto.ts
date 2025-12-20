@@ -3,7 +3,7 @@ import { InstitueType } from "../types/school.types";
 
 export const registerSchoolDto = z.object({
   name: z.string().min(3),
-  email: z.string().email(),
+  email: z.email(),
   password: z.string().min(6),
 
   location: z.object({
@@ -15,5 +15,5 @@ export const registerSchoolDto = z.object({
 
   pan: z.string(),
   contactNumber: z.string(),
-  instituteType: z.nativeEnum(InstitueType),
+  instituteType: z.enum(InstitueType),
 });
