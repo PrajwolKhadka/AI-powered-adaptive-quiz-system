@@ -28,6 +28,11 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {children}
+        <footer className="bg-gray-900 text-gray-300 py-6">
+          <div className="container mx-auto px-6 text-center">
+            <p>© {new Date().getFullYear()} Maanak - AI Powered Adaptive Quiz System. All rights reserved.</p>
+          </div>
+        </footer>
       </body>
     </html>
   );
