@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import RegisterForm from "../_components/register_form";
+import LoginForm from "../_components/login_form";
 
 export default function Page() {
   return (
@@ -22,9 +22,9 @@ export default function Page() {
           <div className="flex-3 flex items-center justify-center p-6 md:p-8 lg:p-12 bg-blue-50">
             <div className="w-full max-w-md md:max-w-lg lg:max-w-xl">
               <h1 className="text-2xl md:text-3xl font-bold text-center md:text-left mb-6 text-gray-900">
-                Create Account
+                Login into your account
               </h1>
-              <RegisterForm />
+              <LoginForm />
             </div>
           </div>
 
