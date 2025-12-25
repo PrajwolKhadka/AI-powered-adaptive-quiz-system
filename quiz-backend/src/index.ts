@@ -5,6 +5,7 @@ import cors from "cors";
 
 import authRoutes from "./routes/auth.routes";
 import superadminAuthRoute from "./routes/superadmin.routes";
+import adminRoutes from "./routes/admin.routes";
 
 dotenv.config();
 
@@ -15,7 +16,7 @@ app.use(express.json());
 
 app.use("/api/school/auth", authRoutes);
 app.use("/api/superadmin/admin", superadminAuthRoute);
-
+app.use("/api/admin", adminRoutes);
 
 const connectDB = async () => {
   try {

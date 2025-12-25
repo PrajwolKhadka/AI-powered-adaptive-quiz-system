@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
-import { error } from "node:console";
+import dotenv from "dotenv";
+dotenv.config();
 
 const SUPERADMIN_EMAIL = process.env.SUPERADMIN_EMAIL;
 const SUPERADMIN_PASSWORD = process.env.SUPERADMIN_PASSWORD;

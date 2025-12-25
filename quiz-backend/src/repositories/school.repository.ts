@@ -48,6 +48,9 @@ export const SchoolRepository = {
   findUnverified: () =>
     SchoolModel.find({ status: SchoolStatus.UNVERIFIED }),
 
+  findVerified: () =>
+    SchoolModel.find({ status: SchoolStatus.VERIFIED }),
+
   verifyById: (id: string) =>
     SchoolModel.findByIdAndUpdate(
       id,
