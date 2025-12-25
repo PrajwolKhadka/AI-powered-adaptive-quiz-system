@@ -1,7 +1,6 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { SchoolRepository } from "../repositories/school.repository";
-import { SchoolStatus } from "../types/school.types";
 
 
 export const AuthService = {
@@ -20,9 +19,6 @@ export const AuthService = {
   async login(email: string, password: string) {
     const school = await SchoolRepository.findByEmail(email);
     if (!school) throw new Error("Invalid credentials");
-
-    if (school.status !== SchoolStatus.VERIFIED)
-      throw new Error("School not verified");
 
     const match = await bcrypt.compare(password, school.password);
     if (!match) throw new Error("Invalid credentials");
