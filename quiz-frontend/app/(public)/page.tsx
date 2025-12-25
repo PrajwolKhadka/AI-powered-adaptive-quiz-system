@@ -88,8 +88,6 @@ export default function LandingPage() {
         <div className="absolute inset-0 bg-linear-to-r from-blue-400 to-blue-700"></div>
         <div className="absolute inset-0 bg-black opacity-50"></div>
 
-        {/* Animated circles */}
-
         <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6">
             Ready to Start?
