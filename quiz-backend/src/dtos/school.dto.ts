@@ -6,10 +6,8 @@ export const registerSchoolDto = z.object({
   email: z.email(),
   password: z.string().min(6),
   location: z.object({
-    province: z.string(),
-    district: z.string(),
     city: z.string(),
-    ward: z.string(),
+    district: z.string(),
   }),
   pan: z.string(),
   contactNumber: z.string(),
