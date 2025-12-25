@@ -1,12 +1,14 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-
+import FeaturesStacked from "./features";
+import WhoWeAre from "./whoarewe";
 export default function LandingPage() {
+
   return (
     <div className="mx-auto bg-linear-to-br from-blue-200 via-white to-blue-200">
       {/* Hero Section */}
-      <section className="relative overflow-hidden">
+      <section className="relative overflow-hidden mb-10">
         <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left Content */}
@@ -15,7 +17,7 @@ export default function LandingPage() {
                 <Image
                   src="/images/logo.png"
                   alt="Logo"
-                  width={200}
+                  width={210}
                   height={50}
                   className="mx-auto lg:mx-0"
                 />
@@ -23,11 +25,9 @@ export default function LandingPage() {
 
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
                 Let's Build Future{" "}
-                <span className="bg-clip-text text-blue-500">
-                  Together
-                </span>
+                <span className="bg-clip-text text-blue-500">Together</span>
               </h1>
-
+            
               <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto lg:mx-0">
                 Explore our platform to manage quiz, resources, and students
                 seamlessly. Interactive, secure, and optimized for modern
@@ -67,7 +67,7 @@ export default function LandingPage() {
             </div>
 
             {/* Right Image */}
-            <div className="relative w-full h-80 md:h-96">
+            <div className="relative w-full h-80 md:h-120">
               <Image
                 src="/images/landing.png"
                 alt="Platform Preview"
@@ -78,78 +78,10 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-
+      {/*who are we*/}
+      <WhoWeAre/>
       {/* Features Section */}
-      <section className="py-16 lg:py-24 bg-white">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-              Why Choose Us
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Everything you need to manage your educational institution
-              efficiently
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8 ">
-            {/* Feature 1 */}
-            <div className="group relative  bg-green-300 rounded-2xl p-8 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 text-center">
-              <div className="w-16 h-16 mb-6 mx-auto">
-                <Image
-                  src="/svgs/bolt.svg"
-                  alt="Fast & Reliable"
-                  width={65}
-                  height={65}
-                />
-              </div>
-              <h3 className="text-2xl font-bold text-black mb-4 text-justify">
-                Fast & Reliable
-              </h3>
-              <p className="text-gray-900 text-justify">
-                Experience fast performance and reliable data handling with our
-                optimized infrastructure.
-              </p>
-            </div>
-
-            {/* Feature 2 */}
-            <div className="group relative  bg-blue-400 rounded-2xl p-8 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 text-center">
-              <div className="w-16 h-16 mb-6 mx-auto">
-                <Image
-                  src="/svgs/secure.svg"
-                  alt="Secure"
-                  width={65}
-                  height={65}
-                />
-              </div>
-              <h3 className="text-2xl font-bold text-black mb-4 text-justify">Secure</h3>
-              <p className="text-gray-900 text-justify">
-                Your data is safe with end-to-end encryption and secure servers
-                protecting every transaction.
-              </p>
-            </div>
-
-            {/* Feature 3 */}
-            <div className="group relative bg-indigo-400 rounded-2xl p-8 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 text-center">
-              <div className="w-16 h-16 mb-6 mx-auto">
-                <Image
-                  src="/svgs/responsive.svg"
-                  alt="Responsive"
-                  width={65}
-                  height={65}
-                />
-              </div>
-              <h3 className="text-2xl font-bold text-black mb-4 text-justify">
-                Responsive
-              </h3>
-              <p className="text-gray-900 text-justify">
-                Works seamlessly on all devices, from phones to desktops with
-                adaptive design.
-              </p>
-            </div>
-            </div>
-        </div>
-      </section>
+     <FeaturesStacked/>
 
       {/* CTA Section */}
       <section className="relative py-16 lg:py-24 overflow-hidden">
@@ -163,27 +95,13 @@ export default function LandingPage() {
             Ready to Start?
           </h2>
           <p className="text-lg sm:text-xl text-blue-100 max-w-3xl mx-auto mb-10">
-            Join hundreds of schools and institutes using our platform to manage
-            their operations efficiently.
+            Join us into the future through our platform for a better tomorrow.
           </p>
           <Link
-            href="/signup"
+            href="/register"
             className="inline-flex items-center px-10 py-5 bg-white text-blue-600 rounded-xl font-bold text-lg hover:bg-blue-50 transition-all duration-300 hover:shadow-2xl hover:scale-105"
           >
             Create Your Account
-            <svg
-              className="w-6 h-6 ml-2"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M17 8l4 4m0 0l-4 4m4-4H3"
-              />
-            </svg>
           </Link>
         </div>
       </section>
