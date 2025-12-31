@@ -21,5 +21,7 @@ export const login = async (req: Request, res: Response) => {
   const { email, password } = loginDto.parse(req.body);
   const result = await AuthService.login(email, password);
   res.json(result);
-  }catch(err:any){({error: err.message || "Login failed"});}
+  }catch(err:any){
+    res.status(400).json({error: err.message || "Login failed"});
+  }
 };
