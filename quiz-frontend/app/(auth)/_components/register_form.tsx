@@ -6,34 +6,53 @@ import Link from "next/link";
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { RegisterData, registerSchema } from "../schema";
+import { registerSchool } from "@/app/lib/auth.api";
 
 export default function RegisterForm() {
   const router = useRouter();
-  const { register, handleSubmit, formState: { errors, isSubmitting } } =
-    useForm<RegisterData>({
-      resolver: zodResolver(registerSchema),
-      mode: "onSubmit",
-    });
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<RegisterData>({
+    resolver: zodResolver(registerSchema),
+    mode: "onSubmit",
+  });
 
   const [pending, setTransition] = useTransition();
 
   const submit = async (values: RegisterData) => {
     setTransition(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      console.log("register", values);
-      router.push("/login");
-    }); 
-  };
+      try {
+        const payload = {
+          name: values.schoolName,
+          email: values.email,
+          password: values.password,
+          pan: values.pan,
+          contactNumber: values.contact,
+          instituteType: values.instituteType.toUpperCase(),
+          location: {
+            city: values.city,
+            district: values.district,
+          },
+        };
 
+        await registerSchool(payload);
+        router.push("/login");
+      } catch (err: any) {
+        alert(err.message);
+      }
+    });
+  };
   return (
-    <form
-      className="space-y-5"
-      onSubmit={handleSubmit(submit)}
-    >
+    <form className="space-y-5" onSubmit={handleSubmit(submit)}>
       {/* First row: School Name & Email */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700" htmlFor="schoolName">
+          <label
+            className="block text-sm font-medium text-gray-700"
+            htmlFor="schoolName"
+          >
             School/Institute Name
           </label>
           <input
@@ -44,12 +63,17 @@ export default function RegisterForm() {
             placeholder="ABC International School"
           />
           {errors.schoolName?.message && (
-            <p className="text-xs text-red-600 mt-1">{errors.schoolName.message}</p>
+            <p className="text-xs text-red-600 mt-1">
+              {errors.schoolName.message}
+            </p>
           )}
         </div>
 
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700" htmlFor="email">
+          <label
+            className="block text-sm font-medium text-gray-700"
+            htmlFor="email"
+          >
             Email Address
           </label>
           <input
@@ -68,7 +92,10 @@ export default function RegisterForm() {
       {/* Second row: Contact & Institute Type */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700" htmlFor="contact">
+          <label
+            className="block text-sm font-medium text-gray-700"
+            htmlFor="contact"
+          >
             Contact Number
           </label>
           <input
@@ -79,12 +106,17 @@ export default function RegisterForm() {
             placeholder="9800000000"
           />
           {errors.contact?.message && (
-            <p className="text-xs text-red-600 mt-1">{errors.contact.message}</p>
+            <p className="text-xs text-red-600 mt-1">
+              {errors.contact.message}
+            </p>
           )}
         </div>
 
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700" htmlFor="instituteType">
+          <label
+            className="block text-sm font-medium text-gray-700"
+            htmlFor="instituteType"
+          >
             Institute Type
           </label>
           <select
@@ -97,7 +129,9 @@ export default function RegisterForm() {
             <option value="public">Public</option>
           </select>
           {errors.instituteType?.message && (
-            <p className="text-xs text-red-600 mt-1">{errors.instituteType.message}</p>
+            <p className="text-xs text-red-600 mt-1">
+              {errors.instituteType.message}
+            </p>
           )}
         </div>
       </div>
@@ -105,7 +139,10 @@ export default function RegisterForm() {
       {/* Third row: City & District */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700" htmlFor="city">
+          <label
+            className="block text-sm font-medium text-gray-700"
+            htmlFor="city"
+          >
             City
           </label>
           <input
@@ -121,7 +158,10 @@ export default function RegisterForm() {
         </div>
 
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700" htmlFor="district">
+          <label
+            className="block text-sm font-medium text-gray-700"
+            htmlFor="district"
+          >
             District
           </label>
           <input
@@ -132,14 +172,19 @@ export default function RegisterForm() {
             placeholder="Kathmandu"
           />
           {errors.district?.message && (
-            <p className="text-xs text-red-600 mt-1">{errors.district.message}</p>
+            <p className="text-xs text-red-600 mt-1">
+              {errors.district.message}
+            </p>
           )}
         </div>
       </div>
 
       {/* PAN */}
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700" htmlFor="pan">
+        <label
+          className="block text-sm font-medium text-gray-700"
+          htmlFor="pan"
+        >
           PAN Number
         </label>
         <input
@@ -158,7 +203,10 @@ export default function RegisterForm() {
       {/* Passwords */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700" htmlFor="password">
+          <label
+            className="block text-sm font-medium text-gray-700"
+            htmlFor="password"
+          >
             Password
           </label>
           <input
@@ -170,12 +218,17 @@ export default function RegisterForm() {
             placeholder="••••••••"
           />
           {errors.password?.message && (
-            <p className="text-xs text-red-600 mt-1">{errors.password.message}</p>
+            <p className="text-xs text-red-600 mt-1">
+              {errors.password.message}
+            </p>
           )}
         </div>
 
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700" htmlFor="confirmPassword">
+          <label
+            className="block text-sm font-medium text-gray-700"
+            htmlFor="confirmPassword"
+          >
             Confirm Password
           </label>
           <input
@@ -187,7 +240,9 @@ export default function RegisterForm() {
             placeholder="••••••••"
           />
           {errors.confirmPassword?.message && (
-            <p className="text-xs text-red-600 mt-1">{errors.confirmPassword.message}</p>
+            <p className="text-xs text-red-600 mt-1">
+              {errors.confirmPassword.message}
+            </p>
           )}
         </div>
       </div>
@@ -202,7 +257,10 @@ export default function RegisterForm() {
 
       <div className="text-center text-sm text-gray-600">
         Already have an account?{" "}
-        <Link href="/login" className="font-semibold text-blue-600 transition-colors hover:text-blue-700 hover:underline">
+        <Link
+          href="/login"
+          className="font-semibold text-blue-600 transition-colors hover:text-blue-700 hover:underline"
+        >
           Log in
         </Link>
       </div>

@@ -8,7 +8,7 @@ export const registerSchool = async (req: Request, res: Response) => {
   const data = registerSchoolDto.parse(req.body);
   await AuthService.registerSchool(data);
   res.status(201).json({
-    message: "Registration successful. Awaiting verification.",
+    message: "Registration successful",
   });
 }
   catch(err:any){

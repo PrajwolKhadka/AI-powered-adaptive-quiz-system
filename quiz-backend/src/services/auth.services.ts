@@ -27,7 +27,7 @@ export const AuthService = {
       role: "SCHOOL",
       token: jwt.sign(
         { id: school.id, role: "SCHOOL" },
-        process.env.JWT_SECRET!
+        process.env.JWT_SECRET!, {expiresIn: '30d'}
       ),
     };
   },
