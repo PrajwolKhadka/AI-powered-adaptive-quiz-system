@@ -1,14 +1,16 @@
-import { Schema, model } from "mongoose";
-import { InstitueType } from "../types/school.types";
 import { SchoolModel } from "../models/school.model";
+import { CreateSchoolDTOType } from "../dtos/school.dto";
 
 export const SchoolRepository = {
-  create: (data: any) => SchoolModel.create(data),
+  create: (data: CreateSchoolDTOType) => {
+    return SchoolModel.create(data);
+  },
 
-  findByEmail: (email: string) =>
-    SchoolModel.findOne({ email }),
+  findByEmail: (email: string) => {
+    return SchoolModel.findOne({ email });
+  },
 
-  findBySchoolName: (name: string) =>
-    SchoolModel.findOne({ name }),
+  findBySchoolName: (name: string) => {
+    return SchoolModel.findOne({ name });
+  },
 };
-
