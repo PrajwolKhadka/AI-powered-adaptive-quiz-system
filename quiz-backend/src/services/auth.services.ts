@@ -1,8 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { SchoolRepository } from "../repositories/school.repository";
-import { SchoolStatus } from "../types/school.types";
-
+import { StudentRepository } from "../repositories/student.repository";
 
 export const AuthService = {
   async registerSchool(data: any) {
@@ -21,9 +20,6 @@ export const AuthService = {
     const school = await SchoolRepository.findByEmail(email);
     if (!school) throw new Error("Invalid credentials");
 
-    if (school.status !== SchoolStatus.VERIFIED)
-      throw new Error("School not verified");
-
     const match = await bcrypt.compare(password, school.password);
     if (!match) throw new Error("Invalid credentials");
 
@@ -31,8 +27,39 @@ export const AuthService = {
       role: "SCHOOL",
       token: jwt.sign(
         { id: school.id, role: "SCHOOL" },
-        process.env.JWT_SECRET!
+        process.env.JWT_SECRET!,
+        { expiresIn: "30d" }
       ),
     };
+  },
+  
+  async loginStudent(email: string, password: string) {
+    const student = await StudentRepository.findByEmail(email);
+    if (!student) throw new Error("Invalid credentials");
+
+    const match = await bcrypt.compare(password, student.password);
+    if (!match) throw new Error("Invalid credentials");
+
+    const token = jwt.sign(
+      { id: student.id, role: "student" },
+      process.env.JWT_SECRET!,
+      { expiresIn: "30d" }
+    );
+
+    return {
+      studentId: student._id,
+      fullName: student.fullName,
+      email: student.email,
+      className: student.className,
+      isFirstLogin: student.isFirstLogin,
+      token,
+      role: student.role,
+    };
+  },
+
+  async changeStudentPassword(studentId: string, newPassword: string) {
+    const hashed = await bcrypt.hash(newPassword, 10);
+
+    await StudentRepository.updatePassword(studentId, hashed);
   },
 };

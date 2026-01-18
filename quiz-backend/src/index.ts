@@ -1,11 +1,11 @@
 import express from "express";
-import mongoose from "mongoose";
+import connectDB from "./database/db";
 import dotenv from "dotenv";
 import cors from "cors";
 
 import authRoutes from "./routes/auth.routes";
 import superadminAuthRoute from "./routes/superadmin.routes";
-import adminRoutes from "./routes/admin.routes";
+import schoolRoutes from "./routes/school.routes";
 
 dotenv.config();
 
@@ -15,27 +15,13 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api/school/auth", authRoutes);
+app.use("/api/school", schoolRoutes)
 app.use("/api/superadmin/admin", superadminAuthRoute);
-app.use("/api/admin", adminRoutes);
 
-const connectDB = async () => {
-  try {
-    const mongoose = require("mongoose");
-    mongoose.connect(process.env.DB_URL).then(() => {
-
-    console.log("DB CONNECTED" + process.env.DB_URL);
-
-});
-  } catch (error) {
-    console.error("MongoDB connection failed", error);
-    process.exit(1);
-  }
-};
-
-const PORT = process.env.PORT || 5000;
+const PORT = Number(process.env.PORT) || 5000;
 
 connectDB().then(() => {
-  app.listen(PORT, () => {
+  app.listen(PORT,'0.0.0.0', () => {
     console.log(`Server running on port ${PORT}`);
   });
 });
