@@ -6,6 +6,8 @@ import Link from "next/link";
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { loginSchema, LoginData } from "../schema";
+import { handleLoginSchool } from "@/lib/actions/auth-action";
+import { useAuth } from "@/context/AuthContext";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -19,9 +21,23 @@ export default function LoginForm() {
 
   const submit = async (values: LoginData) => {
     setTransition(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      console.log("login", values);
-      router.push("/auth/dashboard");
+      try {
+        console.log("Login values:", values);
+
+        const res = await handleLoginSchool(values);
+
+        if (res.success) {
+          console.log("Login response:", res);
+          router.push("/auth/dashboard");
+          
+        } else {
+          console.log("Login response:", res);
+          alert(res.message || "Login failed");
+          
+        }
+      } catch (err: any) {
+        alert(err?.message || "Something went wrong");
+      }
     });
   };
 
