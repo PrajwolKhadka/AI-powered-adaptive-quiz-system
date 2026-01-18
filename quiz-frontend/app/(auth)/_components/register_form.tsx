@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { RegisterData, registerSchema } from "../schema";
-import { registerSchool } from "@/app/lib/auth.api";
+import { handleRegisterSchool } from "@/lib/actions/auth-action";
 
 export default function RegisterForm() {
   const router = useRouter();
@@ -37,7 +37,7 @@ export default function RegisterForm() {
           },
         };
 
-        await registerSchool(payload);
+        await handleRegisterSchool(payload);
         router.push("/login");
       } catch (err: any) {
         alert(err.message);
