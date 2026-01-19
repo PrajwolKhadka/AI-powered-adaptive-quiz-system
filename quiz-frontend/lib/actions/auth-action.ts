@@ -49,7 +49,7 @@ export const handleLoginSchool = async (formData: any) => {
   } catch (err: any) {
     return {
       success: false,
-      message: err.message,
+      message: err.message || "Invalid Credentials",
     };
   }
 };

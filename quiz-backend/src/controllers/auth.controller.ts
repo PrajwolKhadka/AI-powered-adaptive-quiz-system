@@ -3,6 +3,7 @@ import { registerSchoolDto } from "../dtos/school.dto";
 import { loginDto } from "../dtos/auth.dto";
 import { AuthService } from "../services/auth.services";
 import { AuthRequest } from "../middlewares/auth.middleware";
+import { success } from "zod";
 
 export const registerSchool = async (req: Request, res: Response) => {
   try {
@@ -27,7 +28,7 @@ export const login = async (req: Request, res: Response) => {
       data: { role: result.role, email },
     });
   } catch (err: any) {
-    res.status(400).json({ error: err.message || "Login failed" });
+    res.status(401).json({success:false, error: err.message || "Invalid Credentials" });
   }
 };
 
