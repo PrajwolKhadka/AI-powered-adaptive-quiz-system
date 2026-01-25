@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { SchoolRepository } from "../repositories/school.repository";
 import { StudentRepository } from "../repositories/student.repository";
+import { Role } from "../types/roles.types";
 
 export const AuthService = {
   async registerSchool(data: any) {
@@ -26,7 +27,7 @@ export const AuthService = {
     return {
       role: "SCHOOL",
       token: jwt.sign(
-        { id: school.id, role: "SCHOOL" },
+        { id: school.id, role: Role.SCHOOL },
         process.env.JWT_SECRET!,
         { expiresIn: "30d" }
       ),
@@ -41,7 +42,7 @@ export const AuthService = {
     if (!match) throw new Error("Invalid credentials");
 
     const token = jwt.sign(
-      { id: student.id, role: "student" },
+      { id: student.id, role: Role.STUDENT },
       process.env.JWT_SECRET!,
       { expiresIn: "30d" }
     );

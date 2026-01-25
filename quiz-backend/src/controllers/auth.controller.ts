@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { registerSchoolDto } from "../dtos/school.dto";
-import { loginDto } from "../dtos/auth.dto";
+import { changePasswordDto, loginDto } from "../dtos/auth.dto";
 import { AuthService } from "../services/auth.services";
 import { AuthRequest } from "../middlewares/auth.middleware";
 import { success } from "zod";
@@ -44,9 +44,9 @@ export const studentLogin = async (req: Request, res: Response) => {
 
 export const changePassword = async (req: AuthRequest, res: Response) => {
   try {
-    const { newPassword } = req.body;
+    const { newPassword } = changePasswordDto.parse(req.body);
     if (!newPassword) throw new Error("New password is required");
-    if (!newPassword.min(8)) throw new Error("Password must be 8 character long")
+    // if (!newPassword.min(8)) throw new Error("Password must be 8 character long")
 
     await AuthService.changeStudentPassword(req.user!.id, newPassword);
 
