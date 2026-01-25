@@ -34,7 +34,7 @@ export const login = async (req: Request, res: Response) => {
 
 export const studentLogin = async (req: Request, res: Response) => {
   try {
-    const {email, password} = req.body;
+    const {email, password} = loginDto.parse(req.body);
     const result = await AuthService.loginStudent(email, password);
     res.json(result);
   } catch (err: any) {
@@ -46,6 +46,7 @@ export const changePassword = async (req: AuthRequest, res: Response) => {
   try {
     const { newPassword } = req.body;
     if (!newPassword) throw new Error("New password is required");
+    if (!newPassword.min(8)) throw new Error("Password must be 8 character long")
 
     await AuthService.changeStudentPassword(req.user!.id, newPassword);
 
