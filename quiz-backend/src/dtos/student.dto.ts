@@ -9,3 +9,7 @@ export const CreateStudentDTO = z.object({
 
   className: z.string().min(1, "Class is required"),
 });
+
+export const uploadProfilePictureDto = z.object({});
+
+export type UploadProfilePictureDto = z.infer<typeof uploadProfilePictureDto>;
