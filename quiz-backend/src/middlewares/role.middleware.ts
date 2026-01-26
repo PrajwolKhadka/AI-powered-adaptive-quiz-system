@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { AuthRequest } from "./auth.middleware";
+import { Role } from "../types/roles.types";
 export const requireSuperAdmin = (
   req: Request & { user?: { role: string } },
   res: Response,
@@ -16,7 +17,7 @@ export const schoolOnly = (
   res: Response,
   next: NextFunction
 ) => {
-  if (req.user?.role !== "school") {
+  if (req.user?.role !== Role.SCHOOL) {
     return res.status(403).json({ error: "School access only" });
   }
   next();
@@ -27,7 +28,7 @@ export const studentOnly = (
   res: Response,
   next: NextFunction
 ) => {
-  if (req.user?.role !== "student") {
+  if (req.user?.role !== Role.STUDENT) {
     return res.status(403).json({ error: "Student access only" });
   }
   next();
