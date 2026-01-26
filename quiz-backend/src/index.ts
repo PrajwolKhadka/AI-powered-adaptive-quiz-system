@@ -6,6 +6,7 @@ import cors from "cors";
 import authRoutes from "./routes/auth.routes";
 import superadminAuthRoute from "./routes/superadmin.routes";
 import schoolRoutes from "./routes/school.routes";
+import studentRoute from "./routes/student.routes";
 
 dotenv.config();
 
@@ -17,6 +18,7 @@ app.use(express.json());
 app.use("/api/school/auth", authRoutes);
 app.use("/api/school", schoolRoutes)
 app.use("/api/superadmin/admin", superadminAuthRoute);
+app.use("/api/student", studentRoute);
 
 const PORT = Number(process.env.PORT) || 5000;
 
