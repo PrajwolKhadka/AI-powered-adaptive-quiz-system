@@ -32,8 +32,15 @@ export default function LoginForm() {
         const res = await handleLoginSchool(values);
 
         if (res.success) {
-          console.log("Login response:", res);
-          router.push("/auth/dashboard");
+          // console.log("Login response:", res);
+          // router.push("/auth/dashboard");
+          if (res.data.role === "SCHOOL") {
+            router.push("/dashboard"); 
+          } else if (res.data.role === "STUDENT") {
+            router.push("/student/dashboard"); 
+          } else {
+            router.push("/login");
+          }
         } else {
           console.log("Login response:", res);
           setAuthError(res.message || "Invalid credentials");
