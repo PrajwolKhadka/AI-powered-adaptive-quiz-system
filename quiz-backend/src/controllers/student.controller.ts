@@ -14,7 +14,7 @@ export const uploadStudentProfilePicture = async (
       return res.status(400).json({ error: "Profile picture is required" });
     }
 
-    const imageUrl = `/uploads/${req.file.filename}`;
+    const imageUrl = `/uploads/students/${req.file.filename}`;
 
     const student = await StudentService.uploadProfilePicture(
       req.user!.id,
