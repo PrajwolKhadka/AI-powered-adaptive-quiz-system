@@ -1,9 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import { Role } from "../types/roles.types";
 
 export interface JwtPayload {
   id: string;
-  role: "school" | "student";
+  role: Role;
 }
 
 export interface AuthRequest extends Request {

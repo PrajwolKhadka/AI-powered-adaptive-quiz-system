@@ -1,5 +1,5 @@
 "use client";
-
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
@@ -11,15 +11,20 @@ import { useAuth } from "@/context/AuthContext";
 
 export default function LoginForm() {
   const router = useRouter();
-  const { register, handleSubmit, formState: { errors, isSubmitting } } =
-    useForm<LoginData>({
-      resolver: zodResolver(loginSchema),
-      mode: "onSubmit",
-    });
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginData>({
+    resolver: zodResolver(loginSchema),
+    mode: "onSubmit",
+  });
 
   const [pending, setTransition] = useTransition();
+  const [authError, setAuthError] = useState<string | null>(null);
 
   const submit = async (values: LoginData) => {
+    setAuthError(null);
     setTransition(async () => {
       try {
         console.log("Login values:", values);
@@ -29,23 +34,23 @@ export default function LoginForm() {
         if (res.success) {
           console.log("Login response:", res);
           router.push("/auth/dashboard");
-          
         } else {
           console.log("Login response:", res);
-          alert(res.message || "Login failed");
-          
+          setAuthError(res.message || "Invalid credentials");
         }
       } catch (err: any) {
-        alert(err?.message || "Something went wrong");
+        setAuthError(err?.message || "Invalid credentials");
       }
     });
   };
 
   return (
     <form className="space-y-5" onSubmit={handleSubmit(submit)}>
-
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700" htmlFor="email">
+        <label
+          className="block text-sm font-medium text-gray-700"
+          htmlFor="email"
+        >
           Email Address
         </label>
         <input
@@ -61,7 +66,10 @@ export default function LoginForm() {
       </div>
 
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700" htmlFor="password">
+        <label
+          className="block text-sm font-medium text-gray-700"
+          htmlFor="password"
+        >
           Password
         </label>
         <input
@@ -76,7 +84,11 @@ export default function LoginForm() {
           <p className="text-xs text-red-600 mt-1">{errors.password.message}</p>
         )}
       </div>
-
+      {authError && (
+        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-700">
+          {authError}
+        </div>
+      )}
       <button
         type="submit"
         disabled={isSubmitting || pending}

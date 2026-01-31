@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
 import { registerSchoolDto } from "../dtos/school.dto";
-import { loginDto } from "../dtos/auth.dto";
+import { changePasswordDto, loginDto } from "../dtos/auth.dto";
 import { AuthService } from "../services/auth.services";
 import { AuthRequest } from "../middlewares/auth.middleware";
+import { success } from "zod";
 
 export const registerSchool = async (req: Request, res: Response) => {
   try {
@@ -27,13 +28,13 @@ export const login = async (req: Request, res: Response) => {
       data: { role: result.role, email },
     });
   } catch (err: any) {
-    res.status(400).json({ error: err.message || "Login failed" });
+    res.status(401).json({success:false, error: err.message || "Invalid Credentials" });
   }
 };
 
 export const studentLogin = async (req: Request, res: Response) => {
   try {
-    const {email, password} = req.body;
+    const {email, password} = loginDto.parse(req.body);
     const result = await AuthService.loginStudent(email, password);
     res.json(result);
   } catch (err: any) {
@@ -43,8 +44,9 @@ export const studentLogin = async (req: Request, res: Response) => {
 
 export const changePassword = async (req: AuthRequest, res: Response) => {
   try {
-    const { newPassword } = req.body;
+    const { newPassword } = changePasswordDto.parse(req.body);
     if (!newPassword) throw new Error("New password is required");
+    // if (!newPassword.min(8)) throw new Error("Password must be 8 character long")
 
     await AuthService.changeStudentPassword(req.user!.id, newPassword);
 
