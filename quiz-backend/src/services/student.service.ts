@@ -18,4 +18,7 @@ export const StudentService = {
 
     return student;
   },
+  async getById(id: string) {
+    return Student.findById(id);
+  }
 };

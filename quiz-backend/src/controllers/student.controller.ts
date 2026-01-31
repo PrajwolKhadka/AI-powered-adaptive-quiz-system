@@ -37,3 +37,32 @@ export const uploadStudentProfilePicture = async (
     });
   }
 };
+
+export const getStudentProfile = async (req: AuthRequest, res: Response) => {
+  try {
+    const student = await StudentService.getById(req.user!.id);
+
+    if (!student) {
+      return res.status(404).json({
+        success: false,
+        message: "Student not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: {
+        fullName: student.fullName,
+        email: student.email,
+        className: student.className,
+        imageUrl: student.imageUrl, // the path saved when uploading
+        isFirstLogin: student.isFirstLogin,
+      },
+    });
+  } catch (err: any) {
+    res.status(500).json({
+      success: false,
+      message: err.message || "Failed to fetch profile",
+    });
+  }
+};
