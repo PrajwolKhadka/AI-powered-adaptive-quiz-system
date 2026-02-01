@@ -1,9 +1,14 @@
 "use server"
 import { cookies } from "next/headers"
 
+const cookieOptions = {
+    path: "/",
+    maxAge: 60 * 60 * 24 * 7, // 7 days
+};
+
 export const setAuthToken = async (token: string) => {
     const cookieStore = await cookies();
-    cookieStore.set({ name: "auth_token", value: token })
+    cookieStore.set({ name: "auth_token", value: token, ...cookieOptions })
 }
 export const getAuthToken = async () => {
     const cookieStore = await cookies();
@@ -14,7 +19,7 @@ export const setUserData = async (userData: any) => {
     const cookieStore = await cookies();
     // cookie can only store string
     // convert object to string -> JSON.stringify "{}"
-    cookieStore.set({ name: "user_data", value: JSON.stringify(userData) })
+    cookieStore.set({ name: "user_data", value: JSON.stringify(userData), ...cookieOptions })
 }
 export const getUserData = async () => {
     const cookieStore = await cookies();

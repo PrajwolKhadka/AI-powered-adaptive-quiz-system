@@ -49,4 +49,5 @@ export const StudentRepository = {
 
   create: (data: IStudent) =>
     Student.create(data) as Promise<StudentDocument>,
+  
 };

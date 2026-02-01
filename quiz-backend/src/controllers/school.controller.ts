@@ -85,7 +85,6 @@
 //   }
 // );
 
-
 // export const deleteBatchStudents = asyncHandler(
 //   async (req: AuthRequest, res: Response) => {
 //     const { studentIds } = req.body;
@@ -103,7 +102,6 @@
 //   }
 // );
 
-
 import { Response } from "express";
 import { AuthRequest } from "../middlewares/auth.middleware";
 import { asyncHandler } from "../utils/asyncHandler";
@@ -119,40 +117,60 @@ import {
 import { CreateStudentDTO, CreateStudentDto } from "../dtos/student.dto";
 import { Types } from "mongoose";
 
-export const createStudent = asyncHandler(async (req: AuthRequest, res: Response) => {
-  // merge body + optional file
-  const studentData: CreateStudentDto = {
-    ...req.body,
-    imageUrl: req.file ? `/uploads/students/${req.file.filename}` : undefined,
-  };
+export const createStudent = asyncHandler(
+  async (req: AuthRequest, res: Response) => {
+    // merge body + optional file
+    const studentData: CreateStudentDto = {
+      ...req.body,
+      imageUrl: req.file ? `/uploads/${req.file.filename}` : undefined,
+    };
 
-  // validate with DTO
-  const parseResult = CreateStudentDTO.safeParse(studentData);
-  if (!parseResult.success) {
-    return res.status(400).json({ errors: parseResult.error.issues });
-  }
+    // validate with DTO
+    const parseResult = CreateStudentDTO.safeParse(studentData);
+    if (!parseResult.success) {
+      return res.status(400).json({ errors: parseResult.error.issues });
+    }
 
-  // call service with validated DTO + schoolId
-  const student = await createStudentService({
-    ...parseResult.data,
-    schoolId: req.user!.id,
-  });
+    // call service with validated DTO + schoolId
+    const student = await createStudentService({
+      ...parseResult.data,
+      schoolId: req.user!.id,
+    });
 
-  res.status(201).json({
-    message: "Student created",
-    studentId: student._id,
-    imageUrl: student.imageUrl,
-  });
-});
+    res.status(201).json({
+      message: "Student created",
+      studentId: student._id,
+      imageUrl: student.imageUrl,
+    });
+  },
+);
 
-export const getStudents = asyncHandler(async (req: AuthRequest, res: Response) => {
-  const students = await getAllStudentsService(req.user!.id);
-  res.json({ count: students.length, students });
-});
+export const getStudents = asyncHandler(
+  async (req: AuthRequest, res: Response) => {
+    const { search = "", page = "1", limit = "8" } = req.query;
+
+    const pageNum = parseInt(page as string, 10) || 1;
+    const limitNum = parseInt(limit as string, 10) || 8;
+    const skip = (pageNum - 1) * limitNum;
+    const { students, total } = await getAllStudentsService(req.user!.id, {
+      search: search as string,
+      skip,
+      limit: limitNum,
+    });
+
+    res.json({
+      success: true,
+      students,
+      total,
+      page: pageNum,
+      pages: Math.ceil(total / limitNum),
+    });
+  },
+);
 
 // export const getStudentById = asyncHandler(async (req: AuthRequest, res: Response) => {
 //   const student = await getStudentByIdService(req.params.id);
-  
+
 //   const schoolIdstr = student.schoolId?.toString();
 
 //   if (!schoolIdstr || schoolIdstr !== req.user!.id) {
@@ -162,58 +180,98 @@ export const getStudents = asyncHandler(async (req: AuthRequest, res: Response) 
 //   res.json(student);
 // });
 
+export const getStudentById = asyncHandler(
+  async (req: AuthRequest, res: Response) => {
+    const student = await getStudentByIdService(req.params.id);
 
-export const getStudentById = asyncHandler(async (req: AuthRequest, res: Response) => {
-  const student = await getStudentByIdService(req.params.id);
+    if (
+      !student.schoolId ||
+      !new Types.ObjectId(req.user!.id).equals(student.schoolId)
+    ) {
+      throw new Error("Unauthorized access");
+    }
 
-  if (!student.schoolId || !new Types.ObjectId(req.user!.id).equals(student.schoolId)) {
-    throw new Error("Unauthorized access");
-  }
+    res.json(student);
+  },
+);
 
-  res.json(student);
-});
+// export const updateStudent = asyncHandler(async (req: AuthRequest, res: Response) => {
+//   const payload: Partial<CreateStudentDto> = {
+//     ...req.body,
+//     imageUrl: req.file ? `/uploads/${req.file.filename}` : undefined,
+//   };
 
-export const updateStudent = asyncHandler(async (req: AuthRequest, res: Response) => {
-  const payload: Partial<CreateStudentDto> = {
-    ...req.body,
-    imageUrl: req.file ? `/uploads/students/${req.file.filename}` : undefined,
-  };
+//   if (!Object.keys(payload).length) {
+//     throw new Error("At least one field is required");
+//   }
 
-  if (!Object.keys(payload).length) {
-    throw new Error("At least one field is required");
-  }
+//   const updated = await updateStudentService(req.params.id, payload);
 
-  const updated = await updateStudentService(req.params.id, payload);
+//   res.json({
+//     message: "Student updated",
+//     student: updated,
+//   });
+// });
 
-  res.json({
-    message: "Student updated",
-    student: updated,
-  });
-});
+export const updateStudent = asyncHandler(
+  async (req: AuthRequest, res: Response) => {
+    const payload: Partial<CreateStudentDto & { password?: string }> = {
+      ...req.body,
+      imageUrl: req.file ? `/uploads/${req.file.filename}` : undefined,
+    };
+    Object.keys(payload).forEach((key) => {
+      if (
+        payload[key as keyof typeof payload] === undefined ||
+        payload[key as keyof typeof payload] === ""
+      ) {
+        delete payload[key as keyof typeof payload];
+      }
+    });
 
-export const updateStudentPassword = asyncHandler(async (req: AuthRequest, res: Response) => {
-  const { password } = req.body;
-  if (!password) throw new Error("Password is required");
+    if (!Object.keys(payload).length) {
+      throw new Error("At least one field is required");
+    }
 
-  await updateStudentPasswordService(req.params.id, password);
+    const updated = await updateStudentService(req.params.id, payload);
 
-  res.json({ message: "Password updated successfully" });
-});
+    res.json({
+      message: "Student updated successfully",
+      student: updated,
+    });
+  },
+);
 
-export const deleteStudent = asyncHandler(async (req: AuthRequest, res: Response) => {
-  await deleteStudentService(req.params.id);
-  res.status(204).send();
-});
+export const updateStudentPassword = asyncHandler(
+  async (req: AuthRequest, res: Response) => {
+    const { password } = req.body;
+    if (!password) throw new Error("Password is required");
 
-export const deleteBatchStudents = asyncHandler(async (req: AuthRequest, res: Response) => {
-  const { studentIds } = req.body;
+    await updateStudentPasswordService(req.params.id, password);
 
-  if (!Array.isArray(studentIds) || !studentIds.length) {
-    throw new Error("studentIds must be a non-empty array");
-  }
+    res.json({ message: "Password updated successfully" });
+  },
+);
 
-  const result = await deleteBatchStudentsService(studentIds);
+export const deleteStudent = asyncHandler(
+  async (req: AuthRequest, res: Response) => {
+    await deleteStudentService(req.params.id);
+    res.status(204).send();
+  },
+);
 
-  res.json({ message: "Students deleted", deletedCount: result.deletedCount });
-});
+export const deleteBatchStudents = asyncHandler(
+  async (req: AuthRequest, res: Response) => {
+    const { studentIds } = req.body;
 
+    if (!Array.isArray(studentIds) || !studentIds.length) {
+      throw new Error("studentIds must be a non-empty array");
+    }
+
+    const result = await deleteBatchStudentsService(studentIds);
+
+    res.json({
+      message: "Students deleted",
+      deletedCount: result.deletedCount,
+    });
+  },
+);

@@ -3,8 +3,21 @@ import Image from "next/image";
 import Link from "next/link";
 import FeaturesStacked from "./features";
 import WhoWeAre from "./whoarewe";
-export default function LandingPage() {
 
+import { useAuth } from "@/context/AuthContext";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+
+export default function LandingPage() {
+  const router = useRouter();
+  const { isAuthenticated, user, loading } = useAuth();
+
+  useEffect(() => {
+    if (!loading && isAuthenticated && user) {
+      if (user.role === "SCHOOL") router.replace("/school/dashboard");
+      else if (user.role === "STUDENT") router.replace("/student/dashboard");
+    }
+  }, [isAuthenticated, loading, user]);
   return (
     <div className="mx-auto bg-linear-to-br from-blue-200 via-white to-blue-200">
       {/* Hero Section */}
