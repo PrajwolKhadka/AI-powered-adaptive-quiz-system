@@ -168,10 +168,10 @@ export default function SchoolLayout({ children }: { children: React.ReactNode }
       {/* Sidebar */}
       <aside className="w-64 bg-gray-900 text-white flex flex-col shadow-xl">
         {/* Logo */}
-        <div className="px-6 py-6 border-b border-gray-800 flex items-center justify-center bg-gray-300">
-          <div className="w-full h-20 relative">
+        <div className="px-6 py-6 border-b border-gray-800 flex items-center justify-center">
+          <div className="w-full h-28 relative">
             <Image
-              src="/images/logo.png"
+              src="/images/logo(white).png"
               alt="Logo"
               fill
               className="object-contain"
