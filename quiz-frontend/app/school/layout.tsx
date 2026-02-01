@@ -149,6 +149,12 @@ export default function SchoolLayout({ children }: { children: React.ReactNode }
 
   const navItem = (href: string, label: string) => {
     const active = pathname.startsWith(href);
+    // while loading, show spinner
+  if (loading) return <div className="p-6">Loading...</div>;
+
+  // if not authenticated, show nothing but avoid returning null immediately
+  if (!isAuthenticated) return <div className="p-6">Redirecting...</div>;
+  
     return (
       <Link
         href={href}

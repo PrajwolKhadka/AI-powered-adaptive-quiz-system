@@ -86,6 +86,7 @@ import bcrypt from "bcrypt";
 import { StudentRepository } from "../repositories/student.repository";
 import { Types } from "mongoose";
 import { CreateStudentDto } from "../dtos/student.dto";
+import { Student } from "../models/student.model";
 
 export const createStudentService = async (dto: CreateStudentDto & { schoolId: string }) => {
   const hashedPassword = await bcrypt.hash(dto.password, 10);
@@ -100,13 +101,45 @@ export const createStudentService = async (dto: CreateStudentDto & { schoolId: s
     imageUrl: dto.imageUrl,
   });
 };
+interface GetStudentsOptions {
+  search?: string;
+  skip?: number;
+  limit?: number;
+}
 
-export const getAllStudentsService = async (schoolId?: string) => {
-  if (schoolId) {
-    return StudentRepository.findAll({ schoolId: new Types.ObjectId(schoolId) });
+// export const getAllStudentsService = async (schoolId?: string) => {
+//   if (schoolId) {
+//     return StudentRepository.findAll({ schoolId: new Types.ObjectId(schoolId) });
+//   }
+//   return StudentRepository.findAll();
+// };
+export const getAllStudentsService = async (
+  schoolId?: string,
+  options: GetStudentsOptions = {}
+) => {
+  const { search = "", skip = 0, limit = 8 } = options;
+
+  const query: any = {};
+  if (schoolId) query.schoolId = new Types.ObjectId(schoolId);
+
+  if (search) {
+    query.$or = [
+      { fullName: { $regex: search, $options: "i" } },
+      { email: { $regex: search, $options: "i" } },
+    ];
   }
-  return StudentRepository.findAll();
+
+  const total = await Student.countDocuments(query);
+
+  const students = await Student.find(query)
+    .select("fullName email className imageUrl isFirstLogin schoolId")
+    .skip(skip)
+    .limit(limit)
+    .sort({ createdAt: -1 });
+
+  return { students, total };
 };
+
 
 export const getStudentByIdService = async (id: string) => {
   const student = await StudentRepository.findById(id);

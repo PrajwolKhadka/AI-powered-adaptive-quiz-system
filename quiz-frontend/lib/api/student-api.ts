@@ -1,8 +1,10 @@
 import axiosInstance from "./axios";
 import {API} from "./endpoints";
-export const fetchStudents = async () => {
-  const res = await axiosInstance.get("/api/school/students");
-  return res.data.students;
+export const fetchStudents = async (params?: { search: string; page: number; limit: number; }) => {
+  const res = await axiosInstance.get("/api/school/students", { params });
+  // return res.data.students;
+  return res.data;
+
 };
 
 export const createStudent = async (formData: FormData) => {

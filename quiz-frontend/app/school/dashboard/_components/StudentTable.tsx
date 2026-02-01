@@ -77,52 +77,6 @@ export default function StudentTable({
   };
 
   return (
-    // <table className="w-full border">
-    //   <thead className="bg-gray-200">
-    //     <tr>
-    //       <th>Select</th>
-    //       <th>Photo</th>
-    //       <th>Name</th>
-    //       <th>Email</th>
-    //       <th>Class</th>
-    //       <th>Action</th>
-    //     </tr>
-    //   </thead>
-    //   <tbody>
-    //     {students.map((s) => (
-    //       <tr key={s._id} className="text-center border-t">
-    //         <td>
-    //           <input
-    //             type="checkbox"
-    //             checked={selectedIds.includes(s._id)}
-    //             onChange={() => toggle(s._id)}
-    //           />
-    //         </td>
-    //         <td>
-    //           {s.imageUrl ? (
-    //             <img
-    //               src={`${process.env.NEXT_PUBLIC_API_URL}${s.imageUrl}`}
-    //               className="w-10 h-10 rounded-full mx-auto object-cover"
-    //             />
-    //           ) : (
-    //             "—"
-    //           )}
-    //         </td>
-    //         <td>{s.fullName}</td>
-    //         <td>{s.email}</td>
-    //         <td>{s.className}</td>
-    //         <td>
-    //           <button
-    //             className="bg-yellow-500 text-white px-2 py-1 rounded"
-    //             onClick={() => onEdit(s)}
-    //           >
-    //             Edit
-    //           </button>
-    //         </td>
-    //       </tr>
-    //     ))}
-    //   </tbody>
-    // </table>
     <table className="w-full bg-white rounded-xl shadow overflow-hidden">
   <thead className="bg-gray-50 text-gray-600 text-sm">
     <tr>

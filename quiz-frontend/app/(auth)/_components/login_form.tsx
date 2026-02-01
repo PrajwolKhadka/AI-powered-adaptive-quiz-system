@@ -42,6 +42,7 @@ export default function LoginForm() {
           // console.log("Login response:", res);
           // router.push("/auth/dashboard");
           await checkAuth();
+          
           if (res.data.role === "SCHOOL") {
             router.push("/school/dashboard"); 
           } else if (res.data.role === "STUDENT") {

@@ -85,7 +85,6 @@
 //   }
 // );
 
-
 // export const deleteBatchStudents = asyncHandler(
 //   async (req: AuthRequest, res: Response) => {
 //     const { studentIds } = req.body;
@@ -103,7 +102,6 @@
 //   }
 // );
 
-
 import { Response } from "express";
 import { AuthRequest } from "../middlewares/auth.middleware";
 import { asyncHandler } from "../utils/asyncHandler";
@@ -119,40 +117,60 @@ import {
 import { CreateStudentDTO, CreateStudentDto } from "../dtos/student.dto";
 import { Types } from "mongoose";
 
-export const createStudent = asyncHandler(async (req: AuthRequest, res: Response) => {
-  // merge body + optional file
-  const studentData: CreateStudentDto = {
-    ...req.body,
-    imageUrl: req.file ? `/uploads/${req.file.filename}` : undefined,
-  };
+export const createStudent = asyncHandler(
+  async (req: AuthRequest, res: Response) => {
+    // merge body + optional file
+    const studentData: CreateStudentDto = {
+      ...req.body,
+      imageUrl: req.file ? `/uploads/${req.file.filename}` : undefined,
+    };
 
-  // validate with DTO
-  const parseResult = CreateStudentDTO.safeParse(studentData);
-  if (!parseResult.success) {
-    return res.status(400).json({ errors: parseResult.error.issues });
-  }
+    // validate with DTO
+    const parseResult = CreateStudentDTO.safeParse(studentData);
+    if (!parseResult.success) {
+      return res.status(400).json({ errors: parseResult.error.issues });
+    }
 
-  // call service with validated DTO + schoolId
-  const student = await createStudentService({
-    ...parseResult.data,
-    schoolId: req.user!.id,
-  });
+    // call service with validated DTO + schoolId
+    const student = await createStudentService({
+      ...parseResult.data,
+      schoolId: req.user!.id,
+    });
 
-  res.status(201).json({
-    message: "Student created",
-    studentId: student._id,
-    imageUrl: student.imageUrl,
-  });
-});
+    res.status(201).json({
+      message: "Student created",
+      studentId: student._id,
+      imageUrl: student.imageUrl,
+    });
+  },
+);
 
-export const getStudents = asyncHandler(async (req: AuthRequest, res: Response) => {
-  const students = await getAllStudentsService(req.user!.id);
-  res.json({ count: students.length, students });
-});
+export const getStudents = asyncHandler(
+  async (req: AuthRequest, res: Response) => {
+    const { search = "", page = "1", limit = "8" } = req.query;
+
+    const pageNum = parseInt(page as string, 10) || 1;
+    const limitNum = parseInt(limit as string, 10) || 8;
+    const skip = (pageNum - 1) * limitNum;
+    const { students, total } = await getAllStudentsService(req.user!.id, {
+      search: search as string,
+      skip,
+      limit: limitNum,
+    });
+
+    res.json({
+      success: true,
+      students,
+      total,
+      page: pageNum,
+      pages: Math.ceil(total / limitNum),
+    });
+  },
+);
 
 // export const getStudentById = asyncHandler(async (req: AuthRequest, res: Response) => {
 //   const student = await getStudentByIdService(req.params.id);
-  
+
 //   const schoolIdstr = student.schoolId?.toString();
 
 //   if (!schoolIdstr || schoolIdstr !== req.user!.id) {
@@ -162,16 +180,20 @@ export const getStudents = asyncHandler(async (req: AuthRequest, res: Response) 
 //   res.json(student);
 // });
 
+export const getStudentById = asyncHandler(
+  async (req: AuthRequest, res: Response) => {
+    const student = await getStudentByIdService(req.params.id);
 
-export const getStudentById = asyncHandler(async (req: AuthRequest, res: Response) => {
-  const student = await getStudentByIdService(req.params.id);
+    if (
+      !student.schoolId ||
+      !new Types.ObjectId(req.user!.id).equals(student.schoolId)
+    ) {
+      throw new Error("Unauthorized access");
+    }
 
-  if (!student.schoolId || !new Types.ObjectId(req.user!.id).equals(student.schoolId)) {
-    throw new Error("Unauthorized access");
-  }
-
-  res.json(student);
-});
+    res.json(student);
+  },
+);
 
 // export const updateStudent = asyncHandler(async (req: AuthRequest, res: Response) => {
 //   const payload: Partial<CreateStudentDto> = {
@@ -216,34 +238,40 @@ export const updateStudent = asyncHandler(
       message: "Student updated successfully",
       student: updated,
     });
-  }
+  },
 );
 
+export const updateStudentPassword = asyncHandler(
+  async (req: AuthRequest, res: Response) => {
+    const { password } = req.body;
+    if (!password) throw new Error("Password is required");
 
+    await updateStudentPasswordService(req.params.id, password);
 
-export const updateStudentPassword = asyncHandler(async (req: AuthRequest, res: Response) => {
-  const { password } = req.body;
-  if (!password) throw new Error("Password is required");
+    res.json({ message: "Password updated successfully" });
+  },
+);
 
-  await updateStudentPasswordService(req.params.id, password);
+export const deleteStudent = asyncHandler(
+  async (req: AuthRequest, res: Response) => {
+    await deleteStudentService(req.params.id);
+    res.status(204).send();
+  },
+);
 
-  res.json({ message: "Password updated successfully" });
-});
+export const deleteBatchStudents = asyncHandler(
+  async (req: AuthRequest, res: Response) => {
+    const { studentIds } = req.body;
 
-export const deleteStudent = asyncHandler(async (req: AuthRequest, res: Response) => {
-  await deleteStudentService(req.params.id);
-  res.status(204).send();
-});
+    if (!Array.isArray(studentIds) || !studentIds.length) {
+      throw new Error("studentIds must be a non-empty array");
+    }
 
-export const deleteBatchStudents = asyncHandler(async (req: AuthRequest, res: Response) => {
-  const { studentIds } = req.body;
+    const result = await deleteBatchStudentsService(studentIds);
 
-  if (!Array.isArray(studentIds) || !studentIds.length) {
-    throw new Error("studentIds must be a non-empty array");
-  }
-
-  const result = await deleteBatchStudentsService(studentIds);
-
-  res.json({ message: "Students deleted", deletedCount: result.deletedCount });
-});
-
+    res.json({
+      message: "Students deleted",
+      deletedCount: result.deletedCount,
+    });
+  },
+);
