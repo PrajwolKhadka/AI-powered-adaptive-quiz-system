@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
@@ -19,9 +19,16 @@ export default function LoginForm() {
     resolver: zodResolver(loginSchema),
     mode: "onSubmit",
   });
-
+  const { checkAuth, isAuthenticated, user, loading} = useAuth();
   const [pending, setTransition] = useTransition();
   const [authError, setAuthError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!loading && isAuthenticated && user) {
+      if (user.role === "SCHOOL") router.push("/school/dashboard");
+      else if (user.role === "STUDENT") router.push("/student/dashboard");
+    }
+  }, [isAuthenticated, loading, user]);
 
   const submit = async (values: LoginData) => {
     setAuthError(null);
@@ -34,8 +41,9 @@ export default function LoginForm() {
         if (res.success) {
           // console.log("Login response:", res);
           // router.push("/auth/dashboard");
+          await checkAuth();
           if (res.data.role === "SCHOOL") {
-            router.push("/dashboard"); 
+            router.push("/school/dashboard"); 
           } else if (res.data.role === "STUDENT") {
             router.push("/student/dashboard"); 
           } else {

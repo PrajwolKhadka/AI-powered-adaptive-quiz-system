@@ -42,7 +42,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     checkAuth();
-  }, []);
+     const interval = setInterval(async () => {
+      const session = await getAuthSession();
+      if (!session.isAuthenticated && isAuthenticated) {
+        // token/user deleted externally → force logout
+        setIsAuthenticated(false);
+        setUser(null);
+        router.replace("/login");
+      }
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, [isAuthenticated]);
 
   const logout = async () => {
     await logoutSession();

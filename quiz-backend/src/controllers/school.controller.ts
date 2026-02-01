@@ -123,7 +123,7 @@ export const createStudent = asyncHandler(async (req: AuthRequest, res: Response
   // merge body + optional file
   const studentData: CreateStudentDto = {
     ...req.body,
-    imageUrl: req.file ? `/uploads/students/${req.file.filename}` : undefined,
+    imageUrl: req.file ? `/uploads/${req.file.filename}` : undefined,
   };
 
   // validate with DTO
@@ -173,23 +173,53 @@ export const getStudentById = asyncHandler(async (req: AuthRequest, res: Respons
   res.json(student);
 });
 
-export const updateStudent = asyncHandler(async (req: AuthRequest, res: Response) => {
-  const payload: Partial<CreateStudentDto> = {
-    ...req.body,
-    imageUrl: req.file ? `/uploads/students/${req.file.filename}` : undefined,
-  };
+// export const updateStudent = asyncHandler(async (req: AuthRequest, res: Response) => {
+//   const payload: Partial<CreateStudentDto> = {
+//     ...req.body,
+//     imageUrl: req.file ? `/uploads/${req.file.filename}` : undefined,
+//   };
 
-  if (!Object.keys(payload).length) {
-    throw new Error("At least one field is required");
+//   if (!Object.keys(payload).length) {
+//     throw new Error("At least one field is required");
+//   }
+
+//   const updated = await updateStudentService(req.params.id, payload);
+
+//   res.json({
+//     message: "Student updated",
+//     student: updated,
+//   });
+// });
+
+export const updateStudent = asyncHandler(
+  async (req: AuthRequest, res: Response) => {
+    const payload: Partial<CreateStudentDto & { password?: string }> = {
+      ...req.body,
+      imageUrl: req.file ? `/uploads/${req.file.filename}` : undefined,
+    };
+    Object.keys(payload).forEach((key) => {
+      if (
+        payload[key as keyof typeof payload] === undefined ||
+        payload[key as keyof typeof payload] === ""
+      ) {
+        delete payload[key as keyof typeof payload];
+      }
+    });
+
+    if (!Object.keys(payload).length) {
+      throw new Error("At least one field is required");
+    }
+
+    const updated = await updateStudentService(req.params.id, payload);
+
+    res.json({
+      message: "Student updated successfully",
+      student: updated,
+    });
   }
+);
 
-  const updated = await updateStudentService(req.params.id, payload);
 
-  res.json({
-    message: "Student updated",
-    student: updated,
-  });
-});
 
 export const updateStudentPassword = asyncHandler(async (req: AuthRequest, res: Response) => {
   const { password } = req.body;
