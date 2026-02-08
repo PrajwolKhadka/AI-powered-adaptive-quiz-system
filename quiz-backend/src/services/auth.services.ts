@@ -3,6 +3,9 @@ import jwt from "jsonwebtoken";
 import { SchoolRepository } from "../repositories/school.repository";
 import { StudentRepository } from "../repositories/student.repository";
 import { Role } from "../types/roles.types";
+import crypto from "crypto";
+import { sendEmail } from "../utils/mailer";
+
 
 export const AuthService = {
   async registerSchool(data: any) {
@@ -62,5 +65,44 @@ export const AuthService = {
     const hashed = await bcrypt.hash(newPassword, 10);
 
     await StudentRepository.updatePassword(studentId, hashed);
+  },
+
+   async forgotPassword(email: string) {
+    const school = await SchoolRepository.findByEmail(email);
+    if (!school) return; // don’t reveal if email exists
+
+    // generate token
+    const token = crypto.randomBytes(32).toString("hex");
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
+    await SchoolRepository.updateById(school.id, {
+      resetPasswordToken: hashedToken,
+      resetPasswordExpiry: new Date(Date.now() + 10 * 60 * 1000), // 10 min
+    });
+
+    const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
+
+    await sendEmail(
+      school.email,
+      "Reset Your Password",
+      `<p>Click below to reset your password:</p>
+       <a href="${resetLink}">${resetLink}</a>
+       <p>This link expires in 10 minutes.</p>`
+    );
+  },
+
+  async resetPassword(token: string, newPassword: string) {
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+    const school = await SchoolRepository.findByResetToken(hashedToken);
+
+    if (!school) throw new Error("Invalid or expired token");
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    await SchoolRepository.updateById(school.id, {
+      password: hashedPassword,
+      resetPasswordToken: undefined,
+      resetPasswordExpiry: undefined,
+    });
   },
 };
