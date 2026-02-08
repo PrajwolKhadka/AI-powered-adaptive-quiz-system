@@ -1,11 +1,14 @@
 import { Schema, model } from "mongoose";
-import {InstitueType } from "../types/school.types";
+import { InstitueType } from "../types/school.types";
 
 const schoolSchema = new Schema(
   {
     name: { type: String, required: true },
     email: { type: String, unique: true, required: true },
     password: { type: String, required: true },
+
+    resetPasswordToken: { type: String },
+    resetPasswordExpiry: { type: Date },
 
     location: {
       city: String,
@@ -26,7 +29,7 @@ const schoolSchema = new Schema(
       default: "SCHOOL",
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export const SchoolModel = model("School", schoolSchema);
