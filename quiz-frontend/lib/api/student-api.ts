@@ -1,10 +1,18 @@
+import { logout } from "../auth/logout";
 import axiosInstance from "./axios";
 import {API} from "./endpoints";
 export const fetchStudents = async (params?: { search: string; page: number; limit: number; }) => {
-  const res = await axiosInstance.get("/api/school/students", { params });
-  // return res.data.students;
+  try{
+  const res = await axiosInstance.get(API.CRUD.FETCH_STUDENTS, { params });
+    // return res.data.students;
   return res.data;
-
+}
+  catch(err: any){
+    if(err.response.status === 401){
+      logout();
+  }
+  throw err;
+  }
 };
 
 export const createStudent = async (formData: FormData) => {
