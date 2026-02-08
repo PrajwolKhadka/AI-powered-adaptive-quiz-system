@@ -1,6 +1,11 @@
 "use server";
 
-import { registerSchoolApi, loginSchoolApi } from "../api/auth";
+import {
+  registerSchoolApi,
+  loginSchoolApi,
+  forgotPasswordApi,
+  resetPasswordApi,
+} from "../api/auth";
 import { setAuthToken, setUserData } from "../cookies";
 
 export const handleRegisterSchool = async (formData: any) => {
@@ -50,6 +55,41 @@ export const handleLoginSchool = async (formData: any) => {
     return {
       success: false,
       message: err.message || "Invalid Credentials",
+    };
+  }
+};
+
+export const handleForgotPassword = async (formData: { email: string }) => {
+  try {
+    const result = await forgotPasswordApi(formData);
+
+    return {
+      success: true,
+      message: result.message || "Check your email for reset link",
+    };
+  } catch (err: any) {
+    return {
+      success: false,
+      message: err.message || "Failed to send reset link",
+    };
+  }
+};
+
+export const handleResetPassword = async (formData: {
+  token: string;
+  newPassword: string;
+}) => {
+  try {
+    const result = await resetPasswordApi(formData);
+
+    return {
+      success: true,
+      message: result.message || "Password reset successful",
+    };
+  } catch (err: any) {
+    return {
+      success: false,
+      message: err.message || "Failed to reset password",
     };
   }
 };

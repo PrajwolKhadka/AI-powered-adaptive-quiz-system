@@ -6,7 +6,7 @@ export const API_URL =
 
 const axiosInstance = axios.create({
   baseURL: API_URL,
-  // withCredentials: true,
+  withCredentials: true,
   // headers: {
   //   "Content-Type": "application/json",
   // },
@@ -28,3 +28,26 @@ axiosInstance.interceptors.request.use(
 );
 
 export default axiosInstance;
+
+
+// import axios from "axios";
+
+// export const API_URL =
+//   process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
+// const axiosInstance = axios.create({
+//   baseURL: API_URL,
+//   // withCredentials: true, // ✅ THIS IS KEY
+// });
+
+// axiosInstance.interceptors.response.use(
+//   (res) => res,
+//   (err) => {
+//     if (err.response?.status === 401) {
+//       window.location.href = "/login";
+//     }
+//     return Promise.reject(err);
+//   }
+// );
+
+// export default axiosInstance;

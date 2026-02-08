@@ -15,7 +15,13 @@
   const router = Router();
 
   router.post("/create-student", authenticate, schoolOnly, uploads.single("image"), createStudent);
+
+
   router.get("/students", authenticate, schoolOnly, getStudents);
+
+
+
+  
   router.get("/students/:id", authenticate, schoolOnly, getStudentById);
   router.put("/students/:id",authenticate,schoolOnly,uploads.single("image"),updateStudent);
   router.put("/students/:id/password", authenticate, schoolOnly, updateStudentPassword);

@@ -208,20 +208,23 @@ import { useEffect, useState } from "react";
 import { fetchStudents, deleteBatchStudents } from "@/lib/api/student-api";
 import StudentTable from "./_components/StudentTable";
 import StudentFormModal from "./_components/StudentFormModal";
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
 
 export default function StudentsPage() {
   const [students, setStudents] = useState<any[]>([]);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [editingStudent, setEditingStudent] = useState<any>(null);
-
+  const {isAuthenticated, user, loading: authLoading} = useAuth();
+  const router = useRouter();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(1);
   const [loading, setLoading] = useState(false);
 
   const limit = 8;
-
+  
   const loadStudents = async () => {
     setLoading(true);
     try {
@@ -235,9 +238,15 @@ export default function StudentsPage() {
     }
   };
 
+  // useEffect(() => {
+  //   loadStudents();
+  // }, [search, page]);
   useEffect(() => {
+  if (!authLoading && isAuthenticated) {
     loadStudents();
-  }, [search, page]);
+  }
+}, [search, page, authLoading, isAuthenticated]);
+
 
   const handleDeleteSelected = async () => {
     if (!selectedIds.length) return alert("Select students first!");
@@ -251,7 +260,19 @@ export default function StudentsPage() {
       console.error(err);
     }
   };
+  useEffect(() => {
+  if (!authLoading && !isAuthenticated) {
+    router.replace("/login");
+  }
 
+  if (!authLoading && user?.role !== "SCHOOL") {
+    router.replace("/login");
+  }
+}, [authLoading, isAuthenticated, user, router]);
+
+  if (authLoading) {
+  return <div>Checking session...</div>;
+}
   return (
     <div className="p-6">
       {/* Header */}

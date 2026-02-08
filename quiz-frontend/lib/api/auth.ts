@@ -27,3 +27,30 @@ export const loginSchoolApi = async (data: any) => {
     throw new Error(message);
   }
 };
+
+
+export const forgotPasswordApi = async (data: { email: string }) => {
+  try {
+    const res = await axiosInstance.post(API.AUTH.FORGOT_PASSWORD, data);
+    return res.data;
+  } catch (err: any) {
+    const message =
+      err.response?.data?.message ||
+      err.response?.data?.error ||
+      "Failed to send reset link";
+    throw new Error(message);
+  }
+};
+
+export const resetPasswordApi = async (data: { token: string; newPassword: string }) => {
+  try {
+    const res = await axiosInstance.put(API.AUTH.RESET_PASSWORD, data);
+    return res.data;
+  } catch (err: any) {
+    const message =
+      err.response?.data?.message ||
+      err.response?.data?.error ||
+      "Failed to reset password";
+    throw new Error(message);
+  }
+};

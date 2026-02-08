@@ -56,3 +56,24 @@ export const changePassword = async (req: AuthRequest, res: Response) => {
   }
 };
 
+export const forgotPassword = async (req: Request, res: Response) => {
+  try {
+    const { email } = req.body;
+    await AuthService.forgotPassword(email);
+    if (!email) throw new Error("Email is required");
+    res.json({ message: "If the email exists, a reset link has been sent" });
+  } catch (err: any) {
+    res.status(400).json({ message: err.message });
+  }
+};
+
+export const resetPassword = async (req: Request, res: Response) => {
+  try {
+    const { token, newPassword } = req.body;
+    await AuthService.resetPassword(token, newPassword);
+    res.json({ message: "Password reset successful" });
+  } catch (err: any) {
+    res.status(400).json({ message: err.message });
+  }
+};
+
