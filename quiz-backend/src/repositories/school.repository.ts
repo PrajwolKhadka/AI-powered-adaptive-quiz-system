@@ -13,4 +13,15 @@ export const SchoolRepository = {
   findBySchoolName: (name: string) => {
     return SchoolModel.findOne({ name });
   },
+
+  updateById: (id: string, data: any) => {
+    return SchoolModel.findByIdAndUpdate(id, data);
+  },
+
+  findByResetToken: (token: string) => {
+    return SchoolModel.findOne({
+      resetPasswordToken: token,
+      resetPasswordExpiry: { $gt: new Date() },
+    });
+  },
 };
