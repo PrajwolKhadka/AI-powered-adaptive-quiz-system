@@ -12,4 +12,11 @@ export const API = {
     DELETE_BATCH_STUDENTS: "/api/school/students/delete-batch",
     FETCH_STUDENTS: "/api/school/students",
   },
+  QUIZ: {
+    UPLOAD_CSV: "/api/school/upload-csv",
+    GET_QUESTIONS: "/api/school/questions",
+    UPDATE_QUESTION: "/api/school/questions",
+    DELETE_QUESTION: "/api/school/questions",
+    DELETE_BATCH_QUESTIONS: "/api/school/questions/delete-batch",
+  }
 };
