@@ -69,4 +69,50 @@ export const QuestionService = {
         .on("error", reject);
     });
   },
+   async getQuestionsBySchool(schoolId: string) {
+    return await QuestionRepository.findBySchool(schoolId);
+  },
+
+  // ----------------- UPDATE -----------------
+  async updateQuestion(
+    schoolId: string,
+    questionId: string,
+    data: {
+      question: string;
+      options: { a: string; b: string; c: string; d: string };
+      correctAnswer: "a" | "b" | "c" | "d";
+      subject: string;
+      difficulty: "VERY EASY" | "EASY" | "MEDIUM" | "HARD" | "VERY HARD";
+    }
+  ) {
+    const updated = await QuestionModel.findOneAndUpdate(
+      { _id: questionId, schoolId },
+      data,
+      { new: true }
+    );
+
+    if (!updated) throw new Error("Question not found");
+    return updated;
+  },
+
+  // ----------------- DELETE -----------------
+  async deleteQuestion(schoolId: string, questionId: string) {
+    const deleted = await QuestionModel.findOneAndDelete({
+      _id: questionId,
+      schoolId,
+    });
+    if (!deleted) throw new Error("Question not found");
+    return deleted;
+  },
+
+  // ----------------- BATCH DELETE -----------------
+  async deleteBatchQuestions(schoolId: string, questionIds: string[]) {
+    const result = await QuestionModel.deleteMany({
+      _id: { $in: questionIds },
+      schoolId,
+    });
+    return result.deletedCount;
+  },
 };
+
+

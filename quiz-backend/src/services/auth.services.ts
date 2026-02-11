@@ -28,7 +28,7 @@ export const AuthService = {
     if (!match) throw new Error("Invalid credentials");
 
     return {
-      role: "SCHOOL",
+      role: school.role,
       token: jwt.sign(
         { id: school.id, role: Role.SCHOOL },
         process.env.JWT_SECRET!,

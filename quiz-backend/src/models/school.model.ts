@@ -26,7 +26,7 @@ const schoolSchema = new Schema(
 
     role: {
       type: String,
-      default: "SCHOOL",
+      default: "SCHOOLlalala",
     },
   },
   { timestamps: true },

@@ -18,7 +18,7 @@ pnpm-debug.log*
 # Environment variables
 .env
 *.env
-
+*.env.test
 # Vite cache
 .vite/
 
