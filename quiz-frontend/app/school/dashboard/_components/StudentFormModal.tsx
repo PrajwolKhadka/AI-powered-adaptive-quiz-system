@@ -137,9 +137,15 @@ export default function StudentFormModal({ student, onClose, onSave }: any) {
     fd.append("fullName", fullName);
     fd.append("email", email);
     fd.append("className", className);
-    if (!student) fd.append("password", password);
+    if (password) fd.append("password", password);
     if (image) fd.append("image", image);
-
+    console.log("Submitting student form with data:", {
+      fullName,
+      email,
+      className,
+      password: password ? "******" : password,
+      image,
+    });
     student ? await updateStudent(student._id, fd) : await createStudent(fd);
 
     onSave();

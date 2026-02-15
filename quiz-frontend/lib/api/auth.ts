@@ -28,6 +28,17 @@ export const loginSchoolApi = async (data: any) => {
   }
 };
 
+export const studentLoginApi = async (data: any)=> {
+  try{
+    const res= await axiosInstance.post(API.AUTH.STUD_LOGIN, data);
+    return res.data;
+  }
+  catch(err: any){
+    const message = err.response?.data?.message || err.response?.data?.error || "Invalid Credentials";
+    throw new Error(message);
+  }
+};
+
 
 export const forgotPasswordApi = async (data: { email: string }) => {
   try {

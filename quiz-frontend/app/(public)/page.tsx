@@ -15,7 +15,7 @@ export default function LandingPage() {
   useEffect(() => {
     if (!loading && isAuthenticated && user) {
       if (user.role === "SCHOOL") router.replace("/school/dashboard");
-      else if (user.role === "STUDENT") router.replace("/student/dashboard");
+      else if (user.role === "STUDENT") router.replace("/student/StudentDashboard/homepage");
     }
   }, [isAuthenticated, loading, user]);
   return (

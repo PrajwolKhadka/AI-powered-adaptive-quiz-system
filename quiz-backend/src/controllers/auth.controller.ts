@@ -21,24 +21,41 @@ export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = loginDto.parse(req.body);
     const result = await AuthService.login(email, password);
-     res.json({
+    res.json({
       success: true,
       message: "Login successful",
       token: result.token,
       data: { role: result.role, email },
     });
   } catch (err: any) {
-    res.status(401).json({success:false, error: err.message || "Invalid Credentials" });
+    res
+      .status(401)
+      .json({ success: false, error: err.message || "Invalid Credentials" });
   }
 };
 
 export const studentLogin = async (req: Request, res: Response) => {
   try {
-    const {email, password} = loginDto.parse(req.body);
+    const { email, password } = loginDto.parse(req.body);
     const result = await AuthService.loginStudent(email, password);
-    res.json(result);
+    // res.json(result);
+    console.log("Login result in controller:", result);
+    return res.json({
+      success: true,
+      message: "Login successful",
+      token: result.token,
+      // data: { role: result.role, email },
+      data: {
+        role: result.role,
+        email: result.email,
+        fullName: result.fullName,
+        className: result.className,
+        isFirstLogin: result.isFirstLogin,
+        studentId: result.studentId,
+      },
+    });
   } catch (err: any) {
-    res.status(401).json({ message: err.message });
+    res.status(401).json({ success: false, message: err.message });
   }
 };
 
@@ -76,4 +93,3 @@ export const resetPassword = async (req: Request, res: Response) => {
     res.status(400).json({ message: err.message });
   }
 };
-

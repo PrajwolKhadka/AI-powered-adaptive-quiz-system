@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { loginSchema, LoginData } from "../schema";
-import { handleLoginSchool } from "@/lib/actions/auth-action";
+import { handleLoginSchool, handleStudentLogin } from "@/lib/actions/auth-action";
 import { useAuth } from "@/context/AuthContext";
 
 export default function LoginForm() {
@@ -26,7 +26,7 @@ export default function LoginForm() {
   useEffect(() => {
     if (!loading && isAuthenticated && user) {
       if (user.role === "SCHOOL") router.push("/school/dashboard");
-      else if (user.role === "STUDENT") router.push("/student/dashboard");
+      else if (user.role === "STUDENT") router.push("/student/StudentDashboard");
     }
   }, [isAuthenticated, loading, user]);
 
@@ -34,11 +34,14 @@ export default function LoginForm() {
     setAuthError(null);
     setTransition(async () => {
       try {
-        console.log("Login values:", values);
 
-        const res = await handleLoginSchool(values);
+        let res = await handleLoginSchool(values);
 
-        if (res.success) {
+        if(!res?.success){
+          res = await handleStudentLogin(values);
+        }
+
+        if (res?.success) {
           // console.log("Login response:", res);
           // router.push("/auth/dashboard");
           await checkAuth();
@@ -46,7 +49,7 @@ export default function LoginForm() {
           if (res.data.role === "SCHOOL") {
             router.push("/school/dashboard"); 
           } else if (res.data.role === "STUDENT") {
-            router.push("/student/dashboard"); 
+            router.push("/student/StudentDashboard/homepage"); 
           } else {
             router.push("/login");
           }

@@ -5,6 +5,7 @@ import {
   loginSchoolApi,
   forgotPasswordApi,
   resetPasswordApi,
+  studentLoginApi
 } from "../api/auth";
 import { setAuthToken, setUserData } from "../cookies";
 
@@ -58,6 +59,33 @@ export const handleLoginSchool = async (formData: any) => {
     };
   }
 };
+
+export const handleStudentLogin = async (formData: any) => {
+  try{
+    const result = await studentLoginApi(formData);
+    if(result.success){
+      await setAuthToken(result.token);
+      await setUserData(result.data);
+      return {
+        success: true,
+        message: "Login successful",
+        data: result.data,
+      };
+    }
+    return {
+      success: false,
+      message: result.message || "Login failed",
+    };
+  }
+  catch(err: any){
+    return {
+      success: false,
+      message: err.message || "Invalid Credentials",
+    };
+  }
+};
+
+
 
 export const handleForgotPassword = async (formData: { email: string }) => {
   try {
