@@ -38,13 +38,13 @@ export const AuthService = {
   },
   
   async loginStudent(email: string, password: string) {
-    console.log("Email received:", email);
+    // console.log("Email received:", email);
     const student = await StudentRepository.findByEmail(email);
-    console.log("Student found:", student);
+    // console.log("Student found:", student);
     if (!student) throw new Error("Invalid credentials");
 
     const match = await bcrypt.compare(password, student.password);
-    console.log("Password match:", match);
+    // console.log("Password match:", match);
     if (!match) throw new Error("Invalid credentials");
 
     const token = jwt.sign(
