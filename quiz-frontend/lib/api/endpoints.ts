@@ -5,6 +5,7 @@ export const API = {
     FORGOT_PASSWORD: "/api/school/auth/forgot-password",
     RESET_PASSWORD: "/api/school/auth/reset-password",
     STUD_LOGIN: "/api/school/auth/student-login",
+    FIRST_LOGIN: "/api/school/auth/change-password",
   },
   CRUD: {
     CREATE_STUDENT: "/api/school/create-student",
