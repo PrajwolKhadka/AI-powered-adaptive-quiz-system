@@ -5,13 +5,11 @@ import Link from "next/link";
 import { ReactNode, useEffect, useState } from "react";
 import { getProfile } from "@/lib/api/student-api";
 
-// Define the Student interface
 interface Student {
   id: string;
   fullName: string;
   email: string;
   imageUrl?: string;
-  // Add other fields as needed
 }
 
 export default function StudentDashboardLayout({
@@ -27,7 +25,7 @@ export default function StudentDashboardLayout({
     const fetchProfile = async () => {
       try {
         setLoading(true);
-        const data = await getProfile(); // Changed from studentApi.getProfile()
+        const data = await getProfile();
         setStudent(data);
       } catch (err) {
         console.error("Failed to fetch profile:", err);
@@ -42,25 +40,25 @@ export default function StudentDashboardLayout({
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
+      <header className="w-full bg-white shadow-sm px-7 py-4 flex items-center justify-between">
+        <div className="flex items-center gap-115 ">
+          <Link href="/student/StudentDashboard/homepage">
+            <Image
+              src="/images/logo.png"
+              alt="App Logo"
+              width={120}
+              height={40}
+              className="object-contain cursor-pointer"
+              priority
+            />
+          </Link>
 
-      <header className="w-full bg-white shadow-sm px-8 py-4 flex items-center justify-between">
-        {/* Logo */}
-        <Link href="/student/StudentDashboard/homepage">
-          <Image
-            src="/images/logo.png"
-            alt="App Logo"
-            width={120}
-            height={40}
-            className="object-contain cursor-pointer"
-            priority
-          />
-        </Link>
-
-        <nav className="flex gap-16 text-gray-700 font-medium">
-          <Link href="/student/StudentDashboard/homepage">Homepage</Link>
-          <Link href="/student/StudentDashboard/books">Books</Link>
-          <Link href="/student/StudentDashboard/result">Result</Link>
-        </nav>
+          <nav className="flex gap-16 text-black font-medium">
+            <Link href="/student/StudentDashboard/homepage">Homepage</Link>
+            <Link href="/student/StudentDashboard/books">Books</Link>
+            <Link href="/student/StudentDashboard/result">Result</Link>
+          </nav>
+        </div>
 
         <div className="flex items-center gap-3 cursor-pointer">
           {loading ? (
@@ -76,10 +74,6 @@ export default function StudentDashboardLayout({
               {student?.fullName?.charAt(0) || "?"}
             </div>
           )}
-
-          {/* <span className="font-medium">
-            {student?.fullName || "Profile"}
-          </span> */}
         </div>
       </header>
 
