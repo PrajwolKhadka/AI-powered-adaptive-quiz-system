@@ -26,7 +26,13 @@ export default function LoginForm() {
   useEffect(() => {
     if (!loading && isAuthenticated && user) {
       if (user.role === "SCHOOL") router.push("/school/dashboard");
-      else if (user.role === "STUDENT") router.push("/student/StudentDashboard/homepage");
+      else if (user.role === "STUDENT") {
+        if(user.isFirstLogin){
+          router.push("/student/StudentDashboard/changepassword");
+        } else {
+         router.push("/student/StudentDashboard/homepage");
+      }
+    }  
     }
   }, [isAuthenticated, loading, user]);
 
