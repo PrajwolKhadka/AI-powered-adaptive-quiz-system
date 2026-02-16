@@ -6,6 +6,7 @@
     updateStudentPassword,
     deleteStudent,
     deleteBatchStudents, } from "../controllers/school.controller";
+  import { toggleQuizController } from "../controllers/quiz.controller";
   import { authenticate } from "../middlewares/auth.middleware";
   import { schoolOnly } from "../middlewares/role.middleware";
   import { uploadCSV } from "../middlewares/csv_uploads.middleware";
@@ -32,5 +33,7 @@
   router.delete("/questions/:id", authenticate, schoolOnly, deleteQuestion);
   router.post("/questions/delete-batch", authenticate, schoolOnly, deleteBatchQuestions);
 
+  //Quiz Drama
+  router.post("/quiz/toggle", authenticate, schoolOnly, toggleQuizController);
   
   export default router;

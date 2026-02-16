@@ -96,7 +96,7 @@
 // //       {/* Upload CSV */}
 // //       <div className="flex gap-2 mb-4">
 // //         <input type="file" accept=".csv" onChange={handleFileChange} className="border p-2 rounded" disabled={questions.length > 0} />
-        
+
 // //         <button
 // //           onClick={handleUpload}
 // //           disabled={!file || uploading || questions.length > 0}
@@ -114,7 +114,7 @@
 // //         <button className="ml-auto bg-green-600 text-white px-4 py-2 rounded">
 // //           Enable Quiz
 // //         </button>
-        
+
 // //       </div>
 
 // //       {/* Questions Table */}
@@ -324,7 +324,7 @@
 //   const handleBatchDelete = async () => {
 //     if (!selectedIds.length) return alert("Select questions first!");
 //     if (!confirm("Are you sure you want to delete selected questions?")) return;
-    
+
 //     try {
 //       await QuizAPI.deleteBatchQuestions(selectedIds);
 //       setSelectedIds([]);
@@ -349,10 +349,10 @@
 //   return (
 //     <div className="p-6 text-black">
 //       <h1 className="text-2xl font-bold mb-4">Quiz Questions</h1>
-        
-//       <UploadCSV 
-//         questionsExist={questions.length > 0} 
-//         onUploadSuccess={fetchQuestions} 
+
+//       <UploadCSV
+//         questionsExist={questions.length > 0}
+//         onUploadSuccess={fetchQuestions}
 //       />
 
 //       <div className="flex gap-2 mb-4">
@@ -390,7 +390,6 @@
 //   );
 // }
 
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -399,7 +398,7 @@ import { QuizAPI } from "@/lib/api/quiz-api";
 import UploadCSV from "./_components/UploadCSV";
 import QuizTable from "./_components/QuizTable";
 import EditQuestionModal from "./_components/EditQuestion";
-
+import EnableQuizModal from "./_components/EnableQuizModal";
 export interface Question {
   _id: string;
   questionNumber: number;
@@ -416,6 +415,7 @@ export default function QuizzesPage() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [editingQuestion, setEditingQuestion] = useState<Question | null>(null);
   const [loading, setLoading] = useState(false);
+  const [isEnableModalOpen, setEnableModalOpen] = useState(false);
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -469,7 +469,7 @@ export default function QuizzesPage() {
   // Slice questions for current page
   const currentQuestions = questions.slice(
     (currentPage - 1) * questionsPerPage,
-    currentPage * questionsPerPage
+    currentPage * questionsPerPage,
   );
 
   if (authLoading) return <div>Checking session...</div>;
@@ -478,9 +478,9 @@ export default function QuizzesPage() {
     <div className="p-6 text-black">
       <h1 className="text-2xl font-bold mb-4">Quiz Questions</h1>
 
-      <UploadCSV 
-        questionsExist={questions.length > 0} 
-        onUploadSuccess={fetchQuestions} 
+      <UploadCSV
+        questionsExist={questions.length > 0}
+        onUploadSuccess={fetchQuestions}
       />
 
       <div className="flex gap-2 mb-4">
@@ -491,7 +491,13 @@ export default function QuizzesPage() {
         >
           Delete Selected
         </button>
-        <button className="ml-auto bg-green-600 text-white px-4 py-2 rounded">
+        {/* <button className="ml-auto bg-green-600 text-white px-4 py-2 rounded">
+          Enable Quiz
+        </button> */}
+        <button
+          className="ml-auto bg-green-600 text-white px-4 py-2 rounded"
+          onClick={() => setEnableModalOpen(true)}
+        >
           Enable Quiz
         </button>
       </div>
@@ -535,7 +541,7 @@ export default function QuizzesPage() {
                   className={`px-3 py-1 border rounded ${num === currentPage ? "bg-blue-600 text-white" : ""}`}
                 >
                   {num}
-                </button>
+                </button>,
               );
             }
 
@@ -559,6 +565,11 @@ export default function QuizzesPage() {
           onSave={handleSaveEdit}
         />
       )}
+      <EnableQuizModal
+        isOpen={isEnableModalOpen}
+        onClose={() => setEnableModalOpen(false)}
+        onSuccess={fetchQuestions} // refresh questions after enabling
+      />
     </div>
   );
 }

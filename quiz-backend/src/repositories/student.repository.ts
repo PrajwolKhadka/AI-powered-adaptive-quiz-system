@@ -5,7 +5,7 @@ export interface IStudent {
   fullName: string;
   email: string;
   password: string;
-  className: string;
+  className: number;
   role?: string;
   schoolId?: Types.ObjectId;
   isFirstLogin?: boolean;

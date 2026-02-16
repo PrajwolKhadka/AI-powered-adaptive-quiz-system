@@ -26,7 +26,7 @@ export default function LoginForm() {
   useEffect(() => {
     if (!loading && isAuthenticated && user) {
       if (user.role === "SCHOOL") router.push("/school/dashboard");
-      else if (user.role === "STUDENT") router.push("/student/StudentDashboard");
+      else if (user.role === "STUDENT") router.push("/student/StudentDashboard/homepage");
     }
   }, [isAuthenticated, loading, user]);
 
