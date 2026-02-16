@@ -38,8 +38,8 @@ export const studentLogin = async (req: Request, res: Response) => {
   try {
     const { email, password } = loginDto.parse(req.body);
     const result = await AuthService.loginStudent(email, password);
-    // res.json(result);
-    console.log("Login result in controller:", result);
+    // // res.json(result);
+    // console.log("Login result in controller:", result);
     return res.json({
       success: true,
       message: "Login successful",
