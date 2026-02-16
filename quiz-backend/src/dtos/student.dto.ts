@@ -7,7 +7,10 @@ export const CreateStudentDTO = z.object({
 
   password: z.string().min(8, "Password must be at least 8 characters"),
 
-  className: z.string().min(1, "Class is required"),
+  className: z
+    .number({ message: "Class must be a number" })
+    .min(1, "Class must be between 1 and 12")
+    .max(12, "Class must be between 1 and 12"),
 
   imageUrl: z.string().optional(),
 });

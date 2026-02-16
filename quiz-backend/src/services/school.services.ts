@@ -90,13 +90,16 @@ import { Student } from "../models/student.model";
 
 export const createStudentService = async (dto: CreateStudentDto & { schoolId: string }) => {
   const hashedPassword = await bcrypt.hash(dto.password, 10);
-
+const classNum = Number(dto.className);
+if (!classNum || classNum < 1 || classNum > 12) {
+  throw new Error("Class must be a number between 1 and 12");
+}
   return StudentRepository.create({
     email: dto.email,
     password: hashedPassword,
     schoolId: new Types.ObjectId(dto.schoolId),
     fullName: dto.fullName,
-    className: dto.className,
+    className: classNum,
     isFirstLogin: true,
     imageUrl: dto.imageUrl,
   });
@@ -154,6 +157,14 @@ export const updateStudentService = async (
   if (payload.password) {
     payload.password = await bcrypt.hash(payload.password, 10);
   }
+  if (payload.className !== undefined) {
+  const classNum = Number(payload.className);
+  if (!classNum || classNum < 1 || classNum > 12) {
+    delete payload.className;
+  } else {
+    payload.className = classNum;
+  }
+}
 
   const updated = await StudentRepository.updateById(id, payload);
   if (!updated) throw new Error("Student not found");

@@ -4,6 +4,8 @@ export const API = {
     LOGIN: "/api/school/auth/login",
     FORGOT_PASSWORD: "/api/school/auth/forgot-password",
     RESET_PASSWORD: "/api/school/auth/reset-password",
+    STUD_LOGIN: "/api/school/auth/student-login",
+    FIRST_LOGIN: "/api/school/auth/change-password",
   },
   CRUD: {
     CREATE_STUDENT: "/api/school/create-student",
@@ -18,5 +20,9 @@ export const API = {
     UPDATE_QUESTION: "/api/school/questions",
     DELETE_QUESTION: "/api/school/questions",
     DELETE_BATCH_QUESTIONS: "/api/school/questions/delete-batch",
+    TOGGLE: "/api/school/quiz/toggle",
+  },
+  PROFILE:{
+    GET_PROFILE: "/api/student/profile",
   }
 };

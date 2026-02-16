@@ -37,3 +37,13 @@ export const deleteBatchStudents = async (ids: string[]) => {
   const res = await axiosInstance.post(API.CRUD.DELETE_BATCH_STUDENTS, { studentIds: ids });
   return res.data;
 };
+
+export const getProfile = async () => {
+  const res = await axiosInstance.get(API.PROFILE.GET_PROFILE);
+  return res.data.data;
+};
+
+export const changePassword = async (newPassword: string) => {
+  const res = await axiosInstance.post(API.AUTH.FIRST_LOGIN, { newPassword });
+  return res.data;
+};
