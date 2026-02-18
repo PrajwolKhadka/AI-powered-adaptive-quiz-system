@@ -21,6 +21,9 @@ export const API = {
     DELETE_QUESTION: "/api/school/questions",
     DELETE_BATCH_QUESTIONS: "/api/school/questions/delete-batch",
     TOGGLE: "/api/school/quiz/toggle",
+    NEXT_QUESTION: "/api/student/next-question",
+    SUBMIT_ANSWER: "/api/student/submit-answer",
+    ACTIVE_QUIZ: "/api/student/active-quiz",
   },
   PROFILE:{
     GET_PROFILE: "/api/student/profile",

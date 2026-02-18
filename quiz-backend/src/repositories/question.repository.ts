@@ -12,4 +12,12 @@ export const QuestionRepository = {
   deleteBySchool(schoolId: string) {
     return QuestionModel.deleteMany({ schoolId });
   },
+  
+  async findById(id: string) {
+    return QuestionModel.findById(id);
+  },
+
+  async findByIds(ids: string[]) {
+    return QuestionModel.find({ _id: { $in: ids } });
+  }
 };

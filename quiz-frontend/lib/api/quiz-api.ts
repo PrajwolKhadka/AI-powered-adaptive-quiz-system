@@ -41,5 +41,28 @@ export const QuizAPI = {
   toggleQuiz: async (data: { quizId?: string; classLevel: number; subject: string; durationMinutes: number; isActive: boolean }) => {
     const res = await axiosInstance.post(API.QUIZ.TOGGLE, data);
     return res.data;
-  }
+  },
+
+  // --- Active Quiz for Student ---
+  getActiveQuiz: async () => {
+    const res = await axiosInstance.get(API.QUIZ.ACTIVE_QUIZ);
+    return res.data;
+  },
+
+  // --- Next Question ---
+  nextQuestion: async (quizId: string) => {
+    const res = await axiosInstance.post(API.QUIZ.NEXT_QUESTION, { quizId });
+    return res.data;
+  },
+
+  // --- Submit Answer ---
+  submitAnswer: async (quizId: string, questionId: string, selectedOption: string, timeTaken: number) => {
+    const res = await axiosInstance.post(API.QUIZ.SUBMIT_ANSWER, {
+      quizId,
+      questionId,
+      selectedOption,
+      timeTaken,
+    });
+    return res.data;
+  },
 };
