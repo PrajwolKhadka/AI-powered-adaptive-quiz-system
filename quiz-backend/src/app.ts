@@ -5,7 +5,7 @@ import authRoutes from "./routes/auth.routes";
 import superadminRoutes from "./routes/superadmin.routes";
 import schoolRoutes from "./routes/school.routes";
 import studentRoutes from "./routes/student.routes";
-
+import "./cron/quiz.cron";
 const app = express();
 
 // CORS & JSON middleware

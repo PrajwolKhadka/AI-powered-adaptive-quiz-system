@@ -1,8 +1,27 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { QuizAPI } from "@/lib/api/quiz-api";
 
 export default function StudentHomepage() {
+  const router = useRouter();
+  const handleStartQuiz = async () => {
+  try {
+    const data = await QuizAPI.getActiveQuiz();
+
+    if (!data.available) {
+      alert("No Quiz Available at the moment");
+      return;
+    }
+
+    alert(`Quiz available for ${data.subject}!`);
+    router.push(`/student/StudentDashboard/quiz?quizId=${data.quizId}`);
+  } catch (err) {
+    console.error(err);
+    alert("Failed to fetch quiz");
+  }
+};
   return (
     <div className="min-h-screen bg-gray-50">
 
@@ -19,7 +38,7 @@ export default function StudentHomepage() {
             </p>
 
             <button
-              onClick={() => console.log("todo")}
+              onClick={handleStartQuiz}
               className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl shadow-md transition width-200 text-lg font-medium"
             >
               Start Quiz

@@ -9,3 +9,10 @@ export const toggleQuizDto = z.object({
 });
 
 export type ToggleQuizInput = z.infer<typeof toggleQuizDto>;
+
+
+export const getQuizDto = z.object({
+  quizId: z.string(),
+});
+
+export type GetQuizInput = z.infer<typeof getQuizDto>;

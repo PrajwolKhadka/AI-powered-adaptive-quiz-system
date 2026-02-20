@@ -14,9 +14,9 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   async (config) => {
     const token = await getAuthToken(); 
-    console.log("Token:", await getAuthToken());
+    // console.log("Token:", await getAuthToken());
 // Retrieve your token
-    console.log("Axios Interceptor - Retrieved Token:", token);
+    // console.log("Axios Interceptor - Retrieved Token:", token);
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
