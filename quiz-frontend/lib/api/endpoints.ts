@@ -27,5 +27,14 @@ export const API = {
   },
   PROFILE:{
     GET_PROFILE: "/api/student/profile",
+    VERIFY_PASSWORD: "/api/student/verify-password",
+    UPDATE_PROFILE_PICTURE: "/api/student/profile-picture",
+  },
+  RESOURCES:{
+    UPLOAD: "/api/resources/upload-resources",
+    GET_SCHOOL_RESOURCES: "/api/resources/get-resources",
+    UPDATE: "/api/resources/:id",
+    DELETE: "/api/resources/:id",
+    GET_STUDENT_RESOURCES: "/api/resources/student-resources",
   }
 };

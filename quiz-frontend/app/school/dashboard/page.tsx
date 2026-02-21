@@ -368,6 +368,7 @@ import StudentTable from "./_components/StudentTable";
 import StudentFormModal from "./_components/StudentFormModal";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 export default function StudentsPage() {
   const [students, setStudents] = useState<any[]>([]);
@@ -403,7 +404,7 @@ export default function StudentsPage() {
   }, [search, page, authLoading, isAuthenticated]);
 
   const handleDeleteSelected = async () => {
-    if (!selectedIds.length) return alert("Select students first!");
+    if (!selectedIds.length) return toast.error("Select students first!");
     if (!confirm("Are you sure you want to delete selected students?")) return;
 
     try {

@@ -282,6 +282,8 @@ export default function SchoolLayout({ children }: { children: React.ReactNode }
         <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
           {navItem("/school/dashboard", "Student Management")}
           {navItem("/school/quizzes", "Quiz Management")}
+          {navItem("/school/resources", "Resource Management")}
+
         </nav>
 
         {/* Logout */}
