@@ -14,6 +14,7 @@ export default function QuizClient({ quizId, subject, endTime }: Props) {
   const [timeLeft, setTimeLeft] = useState("");
   const [result, setResult] = useState<any>(null);
   const [isEvaluating, setIsEvaluating] = useState(false);
+  const [questionStartTime, setQuestionStartTime] = useState<number>(Date.now());
   const [progress, setProgress] = useState<{ answered: number; total: number } | null>(null);
 
   // ── TIMER ─────────────────────────────────────
@@ -55,6 +56,7 @@ export default function QuizClient({ quizId, subject, endTime }: Props) {
     if (res.done) {
       setResult(res);
       setQuestion(null);
+      setQuestionStartTime(Date.now());
       setProgress(null);
       setIsEvaluating(false);
       return;
@@ -62,7 +64,7 @@ export default function QuizClient({ quizId, subject, endTime }: Props) {
 
     setQuestion(res.question);
 
-    if (res.question?.progress) {
+    if (res.question?.progress) {1
       setProgress(res.question.progress);
     }
 
@@ -72,12 +74,12 @@ export default function QuizClient({ quizId, subject, endTime }: Props) {
   // ── SUBMIT ANSWER ─────────────────────────────
   const submitAnswer = async (selectedOption: string) => {
     if (!question) return;
-
+     const timeTaken = Math.round((Date.now() - questionStartTime) / 1000);
     await QuizAPI.submitAnswer(
       quizId,
       question._id,
       selectedOption,
-      10
+      timeTaken
     );
 
     loadNextQuestion();

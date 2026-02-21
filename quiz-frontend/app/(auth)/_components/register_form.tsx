@@ -7,6 +7,7 @@ import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { RegisterData, registerSchema } from "../schema";
 import { handleRegisterSchool } from "@/lib/actions/auth-action";
+import toast from "react-hot-toast";
 
 export default function RegisterForm() {
   const router = useRouter();
@@ -40,7 +41,7 @@ export default function RegisterForm() {
         await handleRegisterSchool(payload);
         router.push("/login");
       } catch (err: any) {
-        alert(err.message);
+        toast.error(err.message);
       }
     });
   };
