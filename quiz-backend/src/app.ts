@@ -5,6 +5,7 @@ import authRoutes from "./routes/auth.routes";
 import superadminRoutes from "./routes/superadmin.routes";
 import schoolRoutes from "./routes/school.routes";
 import studentRoutes from "./routes/student.routes";
+import resources from "./routes/resources.route";
 import "./cron/quiz.cron";
 const app = express();
 
@@ -24,5 +25,5 @@ app.use("/api/school/auth", authRoutes);
 app.use("/api/school", schoolRoutes);
 app.use("/api/superadmin/admin", superadminRoutes);
 app.use("/api/student", studentRoutes);
-
+app.use("/api/resources", resources);
 export default app;
