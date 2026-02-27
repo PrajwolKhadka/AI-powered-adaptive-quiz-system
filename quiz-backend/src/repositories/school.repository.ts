@@ -13,6 +13,13 @@ export const SchoolRepository = {
   findBySchoolName: (name: string) => {
     return SchoolModel.findOne({ name });
   },
+  async findByPan(pan: string) {
+  return SchoolModel.findOne({ pan });
+},
+
+async findByContactNumber(contactNumber: string) {
+  return SchoolModel.findOne({ contactNumber });
+},
 
   updateById: (id: string, data: any) => {
     return SchoolModel.findByIdAndUpdate(id, data);

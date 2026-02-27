@@ -10,6 +10,8 @@ export interface IStudent {
   schoolId?: Types.ObjectId;
   isFirstLogin?: boolean;
   imageUrl?: string;
+  resetPasswordOtp?: string;
+  resetPasswordExpiry?: Date;
 }
 
 export type StudentDocument = Document & IStudent;

@@ -15,8 +15,8 @@ const schoolSchema = new Schema(
       district: String,
     },
 
-    pan: { type: String, required: true },
-    contactNumber: { type: String, required: true },
+    pan: { type: String, unique: true, required: true },
+    contactNumber: { type: String, unique: true, required: true },
 
     instituteType: {
       type: String,
@@ -26,7 +26,7 @@ const schoolSchema = new Schema(
 
     role: {
       type: String,
-      default: "SCHOOLlalala",
+      default: "SCHOOL",
     },
   },
   { timestamps: true },
