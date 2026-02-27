@@ -59,6 +59,13 @@ Where:
 | **R** | Recent accuracy (last 5 questions) |
 | **D** | Question difficulty |
 
+<p align="center">
+  <img src="algorithm.jpg" width="600"/>
+</p>
+
+
+
+
 ### Question Selection Strategy
 
 - Compute probability for all candidate questions.
