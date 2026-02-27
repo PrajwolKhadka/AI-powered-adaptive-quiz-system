@@ -34,7 +34,6 @@ export class StudentResultsService {
     }));
   }
 
-  // Specific quiz result with AI feedback + question breakdown
   async getStudentResultDetail(
     studentId: string,
     quizId: string
@@ -77,7 +76,6 @@ export class StudentResultsService {
     };
   }
 
-  // Graph-ready data — accuracy and score over time per subject
   async getPerformanceGraph(studentId: string) {
     const results = await this.quizResultRepo.findByStudent(studentId);
 

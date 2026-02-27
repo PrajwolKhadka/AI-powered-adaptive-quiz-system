@@ -12,8 +12,6 @@ const connectDB = async (): Promise<void> => {
 
 export async function connectDatabaseTest(): Promise<typeof mongoose> {
   try {
-    // Use the default mongoose connection for tests
-    // This way all models using mongoose.model() will work
     if (mongoose.connection.readyState === 1) {
       return mongoose;
     }

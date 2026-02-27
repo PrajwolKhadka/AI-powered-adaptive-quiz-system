@@ -73,7 +73,7 @@ export const QuestionService = {
     return await QuestionRepository.findBySchool(schoolId);
   },
 
-  // ----------------- UPDATE -----------------
+
   async updateQuestion(
     schoolId: string,
     questionId: string,
@@ -95,7 +95,6 @@ export const QuestionService = {
     return updated;
   },
 
-  // ----------------- DELETE -----------------
   async deleteQuestion(schoolId: string, questionId: string) {
     const deleted = await QuestionModel.findOneAndDelete({
       _id: questionId,
@@ -105,7 +104,6 @@ export const QuestionService = {
     return deleted;
   },
 
-  // ----------------- BATCH DELETE -----------------
   async deleteBatchQuestions(schoolId: string, questionIds: string[]) {
     const result = await QuestionModel.deleteMany({
       _id: { $in: questionIds },
