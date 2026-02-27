@@ -361,6 +361,21 @@ const SchoolResources = () => {
   };
 
   const handleSubmit = async () => {
+     if (!form.title.trim()) {
+    return toast.error("Please fill in the title");
+  }
+
+  if (!form.description.trim()) {
+    return toast.error("Please fill in the description");
+  }
+
+  if (form.format === "LINK" && !form.linkUrl.trim()) {
+    return toast.error("Please provide a link URL");
+  }
+
+  if (form.format === "PDF" && !file && !editingResource) {
+    return toast.error("Please upload a PDF file");
+  }
     if (form.format === "LINK") {
       const result = validateUrl(form.linkUrl);
       if (result !== true) {

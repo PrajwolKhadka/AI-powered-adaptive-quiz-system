@@ -214,7 +214,7 @@ import Image from "next/image";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
-
+import { Toaster } from "react-hot-toast";
 export default function SchoolLayout({ children }: { children: React.ReactNode }) {
   const { user, isAuthenticated, loading, logout } = useAuth();
   const router = useRouter();
@@ -283,6 +283,7 @@ export default function SchoolLayout({ children }: { children: React.ReactNode }
           {navItem("/school/dashboard", "Student Management")}
           {navItem("/school/quizzes", "Quiz Management")}
           {navItem("/school/resources", "Resource Management")}
+          {navItem("/school/results", "Results Dashboard")}
 
         </nav>
 
@@ -300,6 +301,7 @@ export default function SchoolLayout({ children }: { children: React.ReactNode }
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto">
         <div className="p-8">
+            <Toaster position="top-right" />
           {children}
         </div>
       </main>
