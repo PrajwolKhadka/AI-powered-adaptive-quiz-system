@@ -40,3 +40,5 @@ pnpm-debug.log*
 frontend/src/output.css
 
 backend/superpasshass.js
+
+quiz-backend/uploads/
