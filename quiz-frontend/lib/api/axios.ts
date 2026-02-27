@@ -37,7 +37,7 @@ export default axiosInstance;
 
 // const axiosInstance = axios.create({
 //   baseURL: API_URL,
-//   // withCredentials: true, // ✅ THIS IS KEY
+//   // withCredentials: true,
 // });
 
 // axiosInstance.interceptors.response.use(

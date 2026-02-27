@@ -7,7 +7,7 @@ export const registerSchoolApi = async (data: any) => {
     return res.data;
   } catch (err: any) {
     throw new Error(
-      err.response?.data?.message || "Registration failed"
+      err.response?.data?.message ||err.response?.data?.error ||  "Registration failed"
     );
   }
 };

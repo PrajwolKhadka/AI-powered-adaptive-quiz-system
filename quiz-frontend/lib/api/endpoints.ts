@@ -36,5 +36,13 @@ export const API = {
     UPDATE: "/api/resources/:id",
     DELETE: "/api/resources/:id",
     GET_STUDENT_RESOURCES: "/api/resources/student-resources",
+  },
+  RESULTS:{
+    GET_STUDENT_RESULTS: "/api/results/student/results",
+    GET_STUDENT_INDV_RESULTS: "/api/results/student/results/:quizId",
+    GET_SCHOOL_QUIZZES: "/api/results/school/quizzes",
+    GET_SCHOOL_RESULTS: "/api/results/school/results",
+    GET_QUIZ_RESULTS: "/api/results/school/quizzes/:quizId/results",
+    GET_STUDENT_RESULT_DETAIL: "/api/results/school/quizzes/:quizId/results/:studentId",
   }
 };
