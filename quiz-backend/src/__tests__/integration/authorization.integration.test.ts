@@ -42,7 +42,7 @@ beforeAll(async () => {
     fullName: "Auth Test Student",
     email: "authstudent@test.com",
     password: await bcrypt.hash("Pass123!", 10),
-    className: "10A",
+    className: 10,
     schoolId: school._id,
     role: "STUDENT"
   });

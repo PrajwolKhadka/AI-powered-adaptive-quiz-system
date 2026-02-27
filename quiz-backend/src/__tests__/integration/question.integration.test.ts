@@ -102,7 +102,7 @@ describe("Question CRUD & CSV Integration", () => {
 
   test("Update a question", async () => {
     const res = await request(app)
-      .put(`/api/school/questions/${questionId}`) // Fixed: removed template literal syntax error
+      .put(`/api/school/questions/${questionId}`) 
       .set("Authorization", `Bearer ${token}`)
       .send({
         question: "Updated question?",
@@ -121,7 +121,7 @@ describe("Question CRUD & CSV Integration", () => {
 
   test("Delete a question", async () => {
     const res = await request(app)
-      .delete(`/api/school/questions/${questionId}`) // Fixed: removed template literal syntax error
+      .delete(`/api/school/questions/${questionId}`) 
       .set("Authorization", `Bearer ${token}`);
 
     console.log("Delete Question Response:", res.status, res.body);
@@ -131,7 +131,6 @@ describe("Question CRUD & CSV Integration", () => {
   }, 15000);
 
   test("Batch delete questions", async () => {
-    // First, upload more questions for batch delete
     const csvContent = `question number,question,option a,option b,option c,option d,right answer,subject,difficulty
 3,What is 5+5?,8,9,10,11,c,Math,EASY
 4,Capital of Italy?,Madrid,Rome,Athens,Vienna,b,Geography,MEDIUM`;
