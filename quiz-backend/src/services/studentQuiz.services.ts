@@ -47,7 +47,6 @@ export class StudentQuizService {
 
   async getActiveQuizForStudent(classLevel: number) {
     const now = new Date();
-    console.log("ClassLevel type:", typeof classLevel, classLevel);
 
     const activeQuiz = await QuizModel.findOne({
       classLevel,
@@ -55,9 +54,6 @@ export class StudentQuizService {
       startTime: { $lte: now },
       endTime: { $gt: now },
     });
-
-    console.log("Now:", now);
-    console.log("Active quiz found:", activeQuiz);
 
     return activeQuiz;
   }
@@ -198,82 +194,128 @@ export class StudentQuizService {
     //Adaptive selection via Item Response Theory
     const totalAttempts = uniquePreviousAnswers.length;
     const totalCorrect = uniquePreviousAnswers.filter((a) => a.correct).length;
-    const userAccuracy = totalAttempts > 0 ? totalCorrect / totalAttempts : 0.5;
-    const recentAnswers = uniquePreviousAnswers.slice(-3);
+    // const userAccuracy = totalAttempts > 0 ? totalCorrect / totalAttempts : 0.5;
+    const userAccuracy = (() => {
+      if (uniquePreviousAnswers.length === 0) return 0.5;
+      // Weight recent answers
+      const weighted = uniquePreviousAnswers.reduce((sum, a, i) => {
+        const weight = i + 1; // later answers get higher weight
+        return sum + (a.correct ? weight : 0);
+      }, 0);
+      const totalWeight = uniquePreviousAnswers.reduce(
+        (sum, _, i) => sum + i + 1,
+        0,
+      );
+      return weighted / totalWeight;
+    })();
+    const recentAnswers = uniquePreviousAnswers.slice(-5);
     const recentCorrect = recentAnswers.filter((a) => a.correct).length;
     const recentAccuracy =
       recentAnswers.length > 0 ? recentCorrect / recentAnswers.length : 0.5;
 
-    let candidateQuestions = remainingQuestions;
+    // let candidateQuestions = remainingQuestions;
 
-    if (recentAnswers.length === 3) {
-      if (recentCorrect === 0) {
-        const lastDifficulty =
-          recentAnswers[recentAnswers.length - 1].difficulty;
-        if (lastDifficulty > -1) {
-          const maxDiff = lastDifficulty - 1;
-          candidateQuestions = remainingQuestions.filter((q) => {
-            const diff = difficultyMap[q.difficulty] ?? 0;
-            return diff <= maxDiff;
-          });
-          console.log(
-            `🔽 3 wrong streak → forcing easier (max difficulty ${maxDiff})`,
-          );
-        }
-      } else if (recentCorrect === 3) {
-        const lastDifficulty =
-          recentAnswers[recentAnswers.length - 1].difficulty;
-        if (lastDifficulty < 2) {
-          const targetDiff = lastDifficulty + 1;
-          candidateQuestions = remainingQuestions.filter((q) => {
-            const diff = difficultyMap[q.difficulty] ?? 0;
-            return diff === targetDiff;
-          });
-          console.log(`🔼 3 correct streak at Easy → forcing harder`);
-        }
-      }
-    }
+    // if (recentAnswers.length === 3) {
+    //   if (recentCorrect === 0) {
+    //     const lastDifficulty =
+    //       recentAnswers[recentAnswers.length - 1].difficulty;
+    //     if (lastDifficulty > -1) {
+    //       const maxDiff = lastDifficulty - 1;
+    //       candidateQuestions = remainingQuestions.filter((q) => {
+    //         const diff = difficultyMap[q.difficulty] ?? 0;
+    //         return diff <= maxDiff;
+    //       });
+    //       console.log(
+    //         `3 wrong streak → forcing easier (max difficulty ${maxDiff})`,
+    //       );
+    //     }
+    //   } else if (recentCorrect === 3) {
+    //     const lastDifficulty =
+    //       recentAnswers[recentAnswers.length - 1].difficulty;
+    //     if (lastDifficulty < 2) {
+    //       const targetDiff = lastDifficulty + 1;
+    //       candidateQuestions = remainingQuestions.filter((q) => {
+    //         const diff = difficultyMap[q.difficulty] ?? 0;
+    //         return diff >= targetDiff;
+    //       });
+    //       console.log(`3 correct streak at Easy → forcing harder`);
+    //     }
+    //   }
+    // }
 
-    if (candidateQuestions.length === 0) {
-      candidateQuestions = remainingQuestions;
-    }
+    // if (candidateQuestions.length === 0) {
+    //   candidateQuestions = remainingQuestions;
+    // }
+    // const avgTime =
+    //   totalAttempts > 0
+    //     ? uniquePreviousAnswers.reduce((sum, a) => sum + a.timeTaken, 0) /
+    //       totalAttempts
+    //     : 10;
+
+    // // let bestQuestion = remainingQuestions[0];
+    // let bestQuestion = candidateQuestions[0];
+
+    // let closestDistance = Infinity;
+
+    // for (const q of candidateQuestions) {
+    //   // FIX: q is now a populated object with .subject and .difficulty
+    //   // because we use findByIdWithQuestions and filter from quiz.questionIds
+    //   // const topicAnswers = uniquePreviousAnswers.filter(
+    //   //   (a) => a.subject === q.subject
+    //   // );
+
+    //   // const topicAccuracy =
+    //   //   topicAnswers.length > 0
+    //   //     ? topicAnswers.filter((a) => a.correct).length / topicAnswers.length
+    //   //     : 0.5;
+
+    //   const difficulty = difficultyMap[q.difficulty] ?? 0;
+
+    //   // IRT-inspired probability: target 0.55 (slightly challenging)
+    //   const z = -3 * difficulty + 4 * userAccuracy + 2 * recentAccuracy;
+
+    //   const probability = sigmoid(z);
+    //   const distance = Math.abs(probability - 0.65);
+
+    //   if (distance < closestDistance) {
+    //     closestDistance = distance;
+    //     bestQuestion = q;
+    //   }
+    // }
     const avgTime =
       totalAttempts > 0
         ? uniquePreviousAnswers.reduce((sum, a) => sum + a.timeTaken, 0) /
           totalAttempts
         : 10;
 
-    // let bestQuestion = remainingQuestions[0];
-    let bestQuestion = candidateQuestions[0];
+    let difficultyBias = 0;
+    if (recentAnswers.length >= 3) {
+      if (recentCorrect === 0) {
+        difficultyBias = -1; // recent struggle → easier
+      } else if (recentCorrect === recentAnswers.length && userAccuracy > 0.6) {
+        difficultyBias = +1; // recent success + overall doing well → harder
+      }
+    }
 
+    let bestQuestion = remainingQuestions[0];
     let closestDistance = Infinity;
 
-    for (const q of candidateQuestions) {
-      // FIX: q is now a populated object with .subject and .difficulty
-      // because we use findByIdWithQuestions and filter from quiz.questionIds
-      // const topicAnswers = uniquePreviousAnswers.filter(
-      //   (a) => a.subject === q.subject
-      // );
-
-      // const topicAccuracy =
-      //   topicAnswers.length > 0
-      //     ? topicAnswers.filter((a) => a.correct).length / topicAnswers.length
-      //     : 0.5;
-
+    for (const q of remainingQuestions) {
       const difficulty = difficultyMap[q.difficulty] ?? 0;
 
-      // IRT-inspired probability: target 0.55 (slightly challenging)
-      const z = -3 * difficulty + 4 * userAccuracy + 2 * recentAccuracy;
+      // Apply bias
+      const adjustedDifficulty = difficulty - difficultyBias;
 
+      const z = -3 * adjustedDifficulty + 4 * userAccuracy + 2 * recentAccuracy;
       const probability = sigmoid(z);
-      const distance = Math.abs(probability - 0.65);
+
+      const distance = Math.abs(probability - 0.7);
 
       if (distance < closestDistance) {
         closestDistance = distance;
         bestQuestion = q;
       }
     }
-
     const rawQuestion: any = bestQuestion.toObject
       ? bestQuestion.toObject()
       : bestQuestion;

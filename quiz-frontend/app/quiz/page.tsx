@@ -10,7 +10,7 @@ export default async function QuizPage() {
 
     if (!data.available) {
       return (
-        <div className="p-10 text-center text-xl font-semibold">
+        <div className="p-10 text-center text-xl font-semibold text-black">
           No Quiz Available at the moment
         </div>
       );

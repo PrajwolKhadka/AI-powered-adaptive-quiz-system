@@ -10,6 +10,9 @@ const studentSchema = new Schema(
     schoolId: { type: Types.ObjectId, ref: "School" },
     isFirstLogin: { type: Boolean, default: true },
     imageUrl: {type: String, required: false},
+    
+    resetPasswordOtp: { type: String },
+    resetPasswordExpiry: { type: Date },
   },
   { timestamps: true }
 );

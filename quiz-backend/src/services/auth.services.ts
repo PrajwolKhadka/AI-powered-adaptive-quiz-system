@@ -5,12 +5,19 @@ import { StudentRepository } from "../repositories/student.repository";
 import { Role } from "../types/roles.types";
 import crypto from "crypto";
 import { sendEmail } from "../utils/mailer";
-
+import { Student } from "../models/student.model";
 
 export const AuthService = {
   async registerSchool(data: any) {
-    const exists = await SchoolRepository.findByEmail(data.email);
-    if (exists) throw new Error("School already exists");
+    const [existingEmail, existingPan, existingContact] = await Promise.all([
+      SchoolRepository.findByEmail(data.email),
+      SchoolRepository.findByPan(data.pan),
+      SchoolRepository.findByContactNumber(data.contactNumber),
+    ]);
+    if (existingEmail) throw new Error("School with this email already exists");
+    if (existingPan) throw new Error("School with this PAN already exists");
+    if (existingContact)
+      throw new Error("School with this contact number already exists");
 
     const hashed = await bcrypt.hash(data.password, 10);
 
@@ -32,11 +39,11 @@ export const AuthService = {
       token: jwt.sign(
         { id: school.id, role: Role.SCHOOL },
         process.env.JWT_SECRET!,
-        { expiresIn: "30d" }
+        { expiresIn: "30d" },
       ),
     };
   },
-  
+
   async loginStudent(email: string, password: string) {
     // console.log("Email received:", email);
     const student = await StudentRepository.findByEmail(email);
@@ -50,7 +57,7 @@ export const AuthService = {
     const token = jwt.sign(
       { id: student._id, role: Role.STUDENT },
       process.env.JWT_SECRET!,
-      { expiresIn: "30d" }
+      { expiresIn: "30d" },
     );
 
     return {
@@ -70,7 +77,7 @@ export const AuthService = {
     await StudentRepository.updatePassword(studentId, hashed);
   },
 
-   async forgotPassword(email: string) {
+  async forgotPassword(email: string) {
     const school = await SchoolRepository.findByEmail(email);
     if (!school) return; // don’t reveal if email exists
 
@@ -90,7 +97,7 @@ export const AuthService = {
       "Reset Your Password",
       `<p>Click below to reset your password:</p>
        <a href="${resetLink}">${resetLink}</a>
-       <p>This link expires in 10 minutes.</p>`
+       <p>This link expires in 10 minutes.</p>`,
     );
   },
 
@@ -105,6 +112,49 @@ export const AuthService = {
     await SchoolRepository.updateById(school.id, {
       password: hashedPassword,
       resetPasswordToken: undefined,
+      resetPasswordExpiry: undefined,
+    });
+  },
+
+  async forgotStudentPassword(email: string) {
+    const student = await StudentRepository.findByEmail(email);
+    if (!student) return;
+
+    // Generate 6 digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    const hashedOtp = crypto.createHash("sha256").update(otp).digest("hex");
+
+    await Student.findByIdAndUpdate(student._id, {
+      resetPasswordOtp: hashedOtp,
+      resetPasswordExpiry: new Date(Date.now() + 10 * 60 * 1000),
+    });
+
+    await sendEmail(
+      student.email,
+      "Reset Your Password - OTP",
+      `<p>Your OTP for password reset is:</p>
+     <h2>${otp}</h2>
+     <p>This OTP expires in 10 minutes.</p>`,
+    );
+  },
+
+  async resetStudentPassword(email: string, otp: string, newPassword: string) {
+    const hashedOtp = crypto.createHash("sha256").update(otp).digest("hex");
+
+    const student = await Student.findOne({
+      email,
+      resetPasswordOtp: hashedOtp,
+      resetPasswordExpiry: { $gt: new Date() },
+    });
+
+    if (!student) throw new Error("Invalid or expired OTP");
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    await Student.findByIdAndUpdate(student._id, {
+      password: hashedPassword,
+      resetPasswordOtp: undefined,
       resetPasswordExpiry: undefined,
     });
   },

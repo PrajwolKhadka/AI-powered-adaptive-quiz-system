@@ -368,6 +368,7 @@ import StudentTable from "./_components/StudentTable";
 import StudentFormModal from "./_components/StudentFormModal";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 export default function StudentsPage() {
   const [students, setStudents] = useState<any[]>([]);
@@ -402,18 +403,46 @@ export default function StudentsPage() {
     }
   }, [search, page, authLoading, isAuthenticated]);
 
-  const handleDeleteSelected = async () => {
-    if (!selectedIds.length) return alert("Select students first!");
-    if (!confirm("Are you sure you want to delete selected students?")) return;
+const handleDeleteSelected = async () => {
+  if (!selectedIds.length) return toast.error("Select students first!");
+  // if (!confirm("Are you sure you want to delete selected students?")) return;
+  toast((t) => (
+  <div className="flex flex-col gap-3">
+    <p className="text-sm">
+      Are you sure you want to delete selected students?
+    </p>
 
-    try {
-      await deleteBatchStudents(selectedIds);
-      setSelectedIds([]);
-      loadStudents();
-    } catch (err) {
-      console.error(err);
-    }
-  };
+    <div className="flex gap-2 justify-end">
+      <button
+        className="px-3 py-1 text-sm bg-gray-200 rounded"
+        onClick={() => toast.dismiss(t.id)}
+      >
+        Cancel
+      </button>
+
+      <button
+        className="px-3 py-1 text-sm bg-red-600 text-white rounded"
+        onClick={async () => {
+          try {
+            await deleteBatchStudents(selectedIds);
+            setSelectedIds([]);
+            loadStudents();
+            toast.success("Students deleted successfully");
+          } catch (err) {
+            toast.error("Delete failed");
+          }
+
+          toast.dismiss(t.id);
+        }}
+      >
+        Delete
+      </button>
+    </div>
+  </div>
+), {
+  duration: Infinity,
+});
+};
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {

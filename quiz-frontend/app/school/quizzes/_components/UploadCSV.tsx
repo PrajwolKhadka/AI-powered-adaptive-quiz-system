@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import { QuizAPI } from "@/lib/api/quiz-api";
+import toast from "react-hot-toast";
 
 interface UploadCSVProps {
   questionsExist: boolean;
@@ -50,7 +51,7 @@ export default function UploadCSV({ questionsExist, onUploadSuccess }: UploadCSV
       if (droppedFile.name.endsWith(".csv")) {
         setFile(droppedFile);
       } else {
-        alert("Please upload a CSV file");
+        toast.error("Please upload a CSV file");
       }
     }
   };
@@ -62,12 +63,12 @@ export default function UploadCSV({ questionsExist, onUploadSuccess }: UploadCSV
   };
 
   const handleUpload = async () => {
-    if (!file) return alert("Please select a CSV file first");
+    if (!file) return toast.error("Please select a CSV file first");
     setUploading(true);
 
     try {
       const res = await QuizAPI.uploadCSV(file);
-      alert(`CSV uploaded: ${res.inserted} inserted, ${res.failed} failed`);
+      toast.success(`CSV uploaded: ${res.inserted} inserted, ${res.failed} failed`);
       setFile(null);
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
@@ -75,7 +76,7 @@ export default function UploadCSV({ questionsExist, onUploadSuccess }: UploadCSV
       onUploadSuccess();
     } catch (err: any) {
       console.error(err);
-      alert(err.response?.data?.error || "Upload failed");
+      toast.error(err.response?.data?.error || "Upload failed");
     } finally {
       setUploading(false);
     }

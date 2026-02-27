@@ -27,5 +27,22 @@ export const API = {
   },
   PROFILE:{
     GET_PROFILE: "/api/student/profile",
+    VERIFY_PASSWORD: "/api/student/verify-password",
+    UPDATE_PROFILE_PICTURE: "/api/student/profile-picture",
+  },
+  RESOURCES:{
+    UPLOAD: "/api/resources/upload-resources",
+    GET_SCHOOL_RESOURCES: "/api/resources/get-resources",
+    UPDATE: "/api/resources/:id",
+    DELETE: "/api/resources/:id",
+    GET_STUDENT_RESOURCES: "/api/resources/student-resources",
+  },
+  RESULTS:{
+    GET_STUDENT_RESULTS: "/api/results/student/results",
+    GET_STUDENT_INDV_RESULTS: "/api/results/student/results/:quizId",
+    GET_SCHOOL_QUIZZES: "/api/results/school/quizzes",
+    GET_SCHOOL_RESULTS: "/api/results/school/results",
+    GET_QUIZ_RESULTS: "/api/results/school/quizzes/:quizId/results",
+    GET_STUDENT_RESULT_DETAIL: "/api/results/school/quizzes/:quizId/results/:studentId",
   }
 };

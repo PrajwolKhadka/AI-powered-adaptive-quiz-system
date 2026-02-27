@@ -1,10 +1,9 @@
 "use client";
-
 import Image from "next/image";
 import Link from "next/link";
 import { ReactNode, useEffect, useState } from "react";
 import { getProfile } from "@/lib/api/student-api";
-
+import { Toaster } from "react-hot-toast";
 interface Student {
   id: string;
   fullName: string;
@@ -61,6 +60,7 @@ export default function StudentDashboardLayout({
         </div>
 
         <div className="flex items-center gap-3 cursor-pointer">
+          <Link href="/student/StudentDashboard/profile" className="flex items-center gap-3">
           {loading ? (
             <div className="w-10 h-10 rounded-full bg-gray-200 animate-pulse"></div>
           ) : student?.imageUrl ? (
@@ -74,6 +74,7 @@ export default function StudentDashboardLayout({
               {student?.fullName?.charAt(0) || "?"}
             </div>
           )}
+          </Link>
         </div>
       </header>
 
@@ -84,6 +85,7 @@ export default function StudentDashboardLayout({
           </div>
         )}
         {children}
+        <Toaster position="top-right" />
       </main>
     </div>
   );

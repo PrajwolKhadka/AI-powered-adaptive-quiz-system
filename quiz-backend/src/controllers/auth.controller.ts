@@ -10,10 +10,11 @@ export const registerSchool = async (req: Request, res: Response) => {
     const data = registerSchoolDto.parse(req.body);
     await AuthService.registerSchool(data);
     res.status(201).json({
+      success: true,
       message: "Registration successful",
     });
   } catch (err: any) {
-    res.status(400).json({ error: err.message || "Registration failed" });
+    res.status(400).json({ success: false, error: err.message || "Registration failed" });
   }
 };
 
@@ -88,6 +89,30 @@ export const resetPassword = async (req: Request, res: Response) => {
   try {
     const { token, newPassword } = req.body;
     await AuthService.resetPassword(token, newPassword);
+    res.json({ message: "Password reset successful" });
+  } catch (err: any) {
+    res.status(400).json({ message: err.message });
+  }
+};
+
+
+export const forgotStudentPassword = async (req: Request, res: Response) => {
+  try {
+    const { email } = req.body;
+    await AuthService.forgotStudentPassword(email);
+    res.json({ message: "OTP sent if email exists" });
+  } catch (err: any) {
+    res.status(400).json({ message: err.message });
+  }
+};
+
+
+export const resetStudentPassword = async (req: Request, res: Response) => {
+  try {
+    const { email, otp, newPassword } = req.body;
+
+    await AuthService.resetStudentPassword(email, otp, newPassword);
+
     res.json({ message: "Password reset successful" });
   } catch (err: any) {
     res.status(400).json({ message: err.message });

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { QuizAPI } from "@/lib/api/quiz-api";
+import toast from "react-hot-toast";
 
 interface EnableQuizModalProps {
   isOpen: boolean;
@@ -19,16 +20,16 @@ export default function EnableQuizModal({ isOpen, onClose, onSuccess }: EnableQu
   const [loading, setLoading] = useState(false);
 
   const handleEnable = async () => {
-    if (duration < 1 || duration > 60) return alert("Duration must be 1-60 minutes");
+    if (duration < 1 || duration > 60) return toast.error("Duration must be 1-60 minutes");
     setLoading(true);
     try {
       await QuizAPI.toggleQuiz({ classLevel, subject, durationMinutes: duration, isActive: true });
-      alert("Quiz enabled successfully");
+      toast.success("Quiz enabled successfully");
       onSuccess();
       onClose();
     } catch (err: any) {
       console.error(err);
-      alert(err.response?.data?.message || "Failed to enable quiz");
+      toast.error(err.response?.data?.message || "Failed to enable quiz");
     } finally {
       setLoading(false);
     }
