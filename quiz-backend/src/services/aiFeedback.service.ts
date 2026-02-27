@@ -9,8 +9,8 @@ export class AIFeedbackService {
       throw new Error("GEMINI_API_KEY not found in environment");
     }
 
-    this.ai = new GoogleGenAI({}); // API key picked from process.env.GEMINI_API_KEY
-    this.model = "gemini-3-flash-preview"; // latest working preview model
+    this.ai = new GoogleGenAI({}); // API key yeta tira haldim la
+    this.model = "gemini-3-flash-preview";
   }
 
   async generateQuizFeedback(data: {

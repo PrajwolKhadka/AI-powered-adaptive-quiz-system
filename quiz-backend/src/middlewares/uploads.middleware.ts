@@ -3,8 +3,6 @@ import uuid from "uuid";
 import path from "path";
 import fs from "fs";
 
-// Ensure the uploads directory exists
-// __dirname is the directory of the current module
 const uploadDir = path.join(__dirname, '../../uploads');
 if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });

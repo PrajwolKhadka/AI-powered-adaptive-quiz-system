@@ -55,7 +55,7 @@ export const getStudentProfile = async (req: AuthRequest, res: Response) => {
         fullName: student.fullName,
         email: student.email,
         className: student.className,
-        imageUrl: student.imageUrl, // the path saved when uploading
+        imageUrl: student.imageUrl,
         isFirstLogin: student.isFirstLogin,
       },
     });

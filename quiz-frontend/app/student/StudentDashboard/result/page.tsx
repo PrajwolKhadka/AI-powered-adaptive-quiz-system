@@ -39,8 +39,6 @@ interface GraphData {
     total: number;
   }[];
 }
-
-// Fixed colors per subject line
 const LINE_COLORS = [
   "#000000",
   "#6366f1",
