@@ -66,7 +66,7 @@ export default function ChangePasswordPage() {
   }
 
   return (
-    <div className="flex items-start justify-center min-h-screen bg-gray-100 pt-45">
+    <div className="flex items-start justify-center min-h-screen bg-gray-100 pt-45 text-black">
       <div className="bg-white p-8 rounded-xl shadow-md w-110 space-y-4">
         <div className="space-y-2">
           <h2 className="text-2xl font-semibold text-gray-800">

@@ -10,6 +10,7 @@ interface Resource {
   _id: string;
   title: string;
   description?: string;
+  type: "BOOK" | "RESOURCE";
   format: "PDF" | "LINK";
   fileUrl?: string;
   linkUrl?: string;
@@ -30,7 +31,7 @@ export default function StudentHomepage() {
       }
 
       toast.success(`Quiz available for ${data.subject}!`);
-      router.push(`/student/StudentDashboard/quiz?quizId=${data.quizId}`);
+      router.push(`/quiz?quizId=${data.quizId}`);
     } catch (err) {
       console.error(err);
       toast.error("Failed to fetch quiz");
@@ -48,7 +49,10 @@ export default function StudentHomepage() {
   const fetchResources = async () => {
     try {
       const data = await ResourcesAPI.getStudentResources();
-      setResources(Array.isArray(data) ? data : []);
+      const filtered = Array.isArray(data)
+      ? data.filter((r: Resource) => r.type === "RESOURCE")
+        : [];
+      setResources(filtered);
     } catch (err) {
       console.error("Failed to fetch resources", err);
       setResources([]);
