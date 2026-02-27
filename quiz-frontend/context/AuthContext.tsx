@@ -145,7 +145,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
       
       wasAuthenticatedRef.current = session.isAuthenticated;
-    }, 2000);
+    }, 10000);
 
     return () => clearInterval(interval);
   }, [isAuthenticated, router]); 
