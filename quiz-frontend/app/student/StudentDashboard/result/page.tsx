@@ -83,12 +83,10 @@ export default function StudentResultsPage() {
       year: "numeric",
     });
 
-  // Merge all subjects into a single chart dataset by date label
   const buildChartData = () => {
     const subjects = Object.keys(graph);
     if (subjects.length === 0) return { chartData: [], subjects };
 
-    // Collect all unique date labels across subjects
     const allDates = Array.from(
       new Set(
         subjects.flatMap((s) =>
