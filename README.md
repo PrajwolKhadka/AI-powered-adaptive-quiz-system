@@ -1,4 +1,4 @@
-# 🚀 Adaptive Quiz System with AI Feedback
+# Maanak - Adaptive Quiz System with AI Feedback
 
 An intelligent examination platform that leverages **Item Response Theory (IRT)** to dynamically adjust question difficulty based on student performance and provides personalized AI-generated feedback upon completion.
 
