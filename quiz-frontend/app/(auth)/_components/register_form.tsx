@@ -20,30 +20,67 @@ export default function RegisterForm() {
     mode: "onSubmit",
   });
 
-  const [pending, setTransition] = useTransition();
+  // const [pending, setTransition] = useTransition();
 
+  // const submit = async (values: RegisterData) => {
+  //   setTransition(async () => {
+  //     try {
+  //       const payload = {
+  //         name: values.schoolName,
+  //         email: values.email,
+  //         password: values.password,
+  //         pan: values.pan,
+  //         contactNumber: values.contact,
+  //         instituteType: values.instituteType.toUpperCase(),
+  //         location: {
+  //           city: values.city,
+  //           district: values.district,
+  //         },
+  //       };
+
+  //       await handleRegisterSchool(payload);
+  //       toast.success("Account created successfully! Please log in.");
+  //       router.push("/login");
+  //     } catch (err: any) {
+  //       toast.error(err.message);
+  //     }
+  //   });
+  // };
   const submit = async (values: RegisterData) => {
-    setTransition(async () => {
-      try {
-        const payload = {
-          name: values.schoolName,
-          email: values.email,
-          password: values.password,
-          pan: values.pan,
-          contactNumber: values.contact,
-          instituteType: values.instituteType.toUpperCase(),
-          location: {
-            city: values.city,
-            district: values.district,
-          },
-        };
+    try {
+      const payload = {
+        name: values.schoolName,
+        email: values.email,
+        password: values.password,
+        pan: values.pan,
+        contactNumber: values.contact,
+        instituteType: values.instituteType.toUpperCase(),
+        location: {
+          city: values.city,
+          district: values.district,
+        },
+      };
 
-        await handleRegisterSchool(payload);
+      // await handleRegisterSchool(payload);
+      // toast.success("Account created successfully!");
+      // router.push("/login");
+      const result = await handleRegisterSchool(payload);
+      console.log("Result from server action:", result);
+      if (result?.success) {
+        toast.success(result.message);
         router.push("/login");
-      } catch (err: any) {
-        toast.error(err.message);
+      } else {
+        console.log("Error toast triggered:", result.message);
+        toast.error(result?.message || "Registration failed");
       }
-    });
+    } catch (err: any) {
+      console.log("Register error:", err);
+
+      const message =
+        err?.response?.data?.message || err?.message || "Registration failed";
+
+      toast.error(message);
+    }
   };
   return (
     <form className="space-y-5" onSubmit={handleSubmit(submit)}>
@@ -247,13 +284,21 @@ export default function RegisterForm() {
           )}
         </div>
       </div>
-
+      <div className="text-center text-sm text-gray-600">
+        By signing up I agree with all the{" "}
+        <Link
+          href="/terms"
+          className="font-semibold text-blue-600 transition-colors hover:text-blue-700 hover:underline"
+        >
+          Terms and Conditions
+        </Link>
+      </div>
       <button
         type="submit"
-        disabled={isSubmitting || pending}
+        disabled={isSubmitting}
         className="w-full rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
       >
-        {isSubmitting || pending ? "Creating account..." : "Create account"}
+        {isSubmitting ? "Creating account..." : "Create account"}
       </button>
 
       <div className="text-center text-sm text-gray-600">
