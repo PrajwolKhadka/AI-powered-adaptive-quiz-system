@@ -43,9 +43,7 @@ const StudentBooks = () => {
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    return q
-      ? books.filter((b) => b.title.toLowerCase().includes(q))
-      : books;
+    return q ? books.filter((b) => b.title.toLowerCase().includes(q)) : books;
   }, [books, search]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
@@ -118,7 +116,11 @@ const StudentBooks = () => {
 
       {loading ? (
         <div className="flex items-center justify-center py-24 text-gray-400">
-          <svg className="animate-spin h-6 w-6 mr-2" viewBox="0 0 24 24" fill="none">
+          <svg
+            className="animate-spin h-6 w-6 mr-2"
+            viewBox="0 0 24 24"
+            fill="none"
+          >
             <circle
               className="opacity-25"
               cx="12"
@@ -223,7 +225,10 @@ const StudentBooks = () => {
 
                 {pagePills.map((item, idx) =>
                   item === "…" ? (
-                    <span key={`ellipsis-${idx}`} className="px-2 text-gray-400 text-sm">
+                    <span
+                      key={`ellipsis-${idx}`}
+                      className="px-2 text-gray-400 text-sm"
+                    >
                       …
                     </span>
                   ) : (
@@ -238,7 +243,7 @@ const StudentBooks = () => {
                     >
                       {item}
                     </button>
-                  )
+                  ),
                 )}
 
                 <button
@@ -255,25 +260,30 @@ const StudentBooks = () => {
       )}
 
       {selectedPdf && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white w-full max-w-5xl h-[90vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden">
-            <div className="flex items-center justify-between px-5 py-3 border-b bg-gray-50">
-              <span className="font-semibold text-gray-700 text-sm">PDF Viewer</span>
-              <button
-                onClick={() => setSelectedPdf(null)}
-                className="bg-red-500 hover:bg-red-600 text-white text-sm px-3 py-1.5 rounded-lg transition"
-              >
-                Close
-              </button>
-            </div>
-            <iframe
-              src={`${selectedPdf}#toolbar=0&navpanes=0&scrollbar=0`}
-              className="flex-1 w-full"
-              title="PDF Viewer"
-            />
-          </div>
-        </div>
-      )}
+  <div
+    className="fixed inset-0 z-50 bg-black"
+    onContextMenu={(e) => e.preventDefault()}
+  >
+    <div className="absolute top-0 left-0 right-0 h-14 bg-black/80 flex items-center justify-between px-6 z-10">
+      <span className="text-white text-sm font-medium">
+        PDF Viewer
+      </span>
+
+      <button
+        onClick={() => setSelectedPdf(null)}
+        className="bg-white/10 hover:bg-white/20 text-white px-4 py-1.5 rounded-lg text-sm transition"
+      >
+        Close
+      </button>
+    </div>
+
+    <iframe
+  src={`${selectedPdf}#toolbar=0&navpanes=0&scrollbar=0`}
+  className="w-screen h-screen pt-14"
+  title="PDF Viewer"
+/>
+  </div>
+)}
     </div>
   );
 };

@@ -225,7 +225,7 @@ export default function QuizClient({ quizId, subject, endTime }: Props) {
     total: number;
   } | null>(null);
 
-  /* ================= TIMER ================= */
+
   useEffect(() => {
     const interval = setInterval(() => {
       const now = Date.now();
@@ -252,7 +252,7 @@ export default function QuizClient({ quizId, subject, endTime }: Props) {
     return () => clearInterval(interval);
   }, [endTime]);
 
-  /* ================= LOAD FIRST QUESTION ================= */
+
   useEffect(() => {
     loadNextQuestion();
   }, []);
@@ -282,7 +282,7 @@ export default function QuizClient({ quizId, subject, endTime }: Props) {
     setLoading(false);
   }, [quizId]);
 
-  /* ================= SUBMIT ANSWER ================= */
+
   const submitAnswer = async (optionKey: string) => {
     if (!question || selected) return;
 
@@ -302,7 +302,7 @@ export default function QuizClient({ quizId, subject, endTime }: Props) {
     loadNextQuestion();
   };
 
-  /* ================= RESULT SCREEN ================= */
+//  Results
   if (isFinishing && !result) {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 gap-6 text-center px-6">
@@ -335,7 +335,6 @@ export default function QuizClient({ quizId, subject, endTime }: Props) {
       <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-10 text-black">
         <div className="w-full max-w-2xl bg-white rounded-3xl shadow-xl p-8 text-center space-y-6 text-black">
           <h1 className="text-3xl font-bold">🎉 Quiz Completed</h1>
-
           <div className="text-gray-700 text-lg space-y-2">
             <p>
               Score: <strong>{result.correctAnswers}</strong> /{" "}
@@ -359,27 +358,27 @@ export default function QuizClient({ quizId, subject, endTime }: Props) {
               <h3 className="font-semibold mb-2">
                 🤖 AI Feedback
               </h3>
-              <button
+              {result.aiFeedback}
+            </div>
+          )}
+          <button
                 onClick={() => window.location.href = '/student/StudentDashboard/homepage'}
                 className="text-blue-600 font-medium mb-2"
               >
                 Back to Homepage
               </button>
-              {result.aiFeedback}
-            </div>
-          )}
         </div>
       </div>
     );
   }
 
-  /* ================= LOADING STATE ================= */
+//  Loading State
   if (loading && !isFinishing) {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 gap-6">
       <div className="animate-spin rounded-full h-14 w-14 border-4 border-gray-200 border-t-black" />
       <p className="text-gray-500 font-medium animate-pulse">
-        Loading next question...
+       Analyzing for further steps....
       </p>
     </div>
   );
@@ -390,7 +389,6 @@ export default function QuizClient({ quizId, subject, endTime }: Props) {
       ? progress.total - progress.answered
       : null;
 
-  /* ================= MAIN QUIZ UI ================= */
   if (!question) {
     return null;
   }
@@ -408,7 +406,6 @@ export default function QuizClient({ quizId, subject, endTime }: Props) {
           </div>
         </div>
 
-        {/* Meta */}
         <div className="flex justify-between text-sm text-gray-500 mb-6">
           <span>Difficulty: {question.difficulty}</span>
 

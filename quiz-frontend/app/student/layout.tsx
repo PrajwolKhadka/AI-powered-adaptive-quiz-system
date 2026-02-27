@@ -4,6 +4,8 @@ import Link from "next/link";
 import { ReactNode, useEffect, useState } from "react";
 import { getProfile } from "@/lib/api/student-api";
 import { Toaster } from "react-hot-toast";
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
 interface Student {
   id: string;
   fullName: string;
@@ -16,9 +18,16 @@ export default function StudentDashboardLayout({
 }: {
   children: ReactNode;
 }) {
+  const router = useRouter();
+  const { user, isAuthenticated,logout } = useAuth();
   const [student, setStudent] = useState<Student | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  useEffect(() => {
+    if (!loading && (!isAuthenticated || user?.role !== "STUDENT")) {
+      router.replace("/login");
+    }
+  }, [loading, isAuthenticated, user, router]);
 
   useEffect(() => {
     const fetchProfile = async () => {
