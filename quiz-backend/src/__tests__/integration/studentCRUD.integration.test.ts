@@ -56,14 +56,13 @@ describe("Student CRUD Integration", () => {
       .field("fullName", "John Doe")
       .field("email", "johndoe@example.com")
       .field("password", "Student123!")
-      .field("className", "10A");
+      .field("className", 10);
 
-    console.log("Create Response:", res.status, res.body); // Debug
 
     expect(res.status).toBe(201);
-    expect(res.body).toHaveProperty("studentId"); // Changed from student._id
+    expect(res.body).toHaveProperty("studentId"); 
     expect(res.body.message).toBe("Student created");
-    studentId = res.body.studentId; // Changed
+    studentId = res.body.studentId;
   }, 15000);
 
   test("Get all students", async () => {
@@ -71,10 +70,10 @@ describe("Student CRUD Integration", () => {
       .get("/api/school/students")
       .set("Authorization", `Bearer ${token}`);
 
-    console.log("Get All Response:", res.status, res.body); // Debug
+    // console.log("Get All Response:", res.status, res.body); // Debug ko lagi haleko
 
     expect(res.status).toBe(200);
-    expect(res.body.success).toBe(true); // Added
+    expect(res.body.success).toBe(true); 
     expect(res.body.students).toBeDefined();
     expect(res.body.students.length).toBeGreaterThan(0);
     expect(res.body).toHaveProperty("total");
@@ -86,10 +85,10 @@ describe("Student CRUD Integration", () => {
       .get(`/api/school/students/${studentId}`)
       .set("Authorization", `Bearer ${token}`);
 
-    console.log("Get By ID Response:", res.status, res.body); // Debug
+    // console.log("Get By ID Response:", res.status, res.body); // Debug ko lagi haleko
 
     expect(res.status).toBe(200);
-    // Controller returns raw student object, not wrapped
+
     expect(res.body._id).toBe(studentId);
     expect(res.body.fullName).toBe("John Doe");
   }, 15000);
@@ -100,7 +99,7 @@ describe("Student CRUD Integration", () => {
       .set("Authorization", `Bearer ${token}`)
       .field("fullName", "John Updated");
 
-    console.log("Update Response:", res.status, res.body); // Debug
+    // console.log("Update Response:", res.status, res.body); // Debug ko lagi haleko
 
     expect(res.status).toBe(200);
     expect(res.body.message).toBe("Student updated successfully");
@@ -111,9 +110,9 @@ describe("Student CRUD Integration", () => {
     const res = await request(app)
       .put(`/api/school/students/${studentId}/password`)
       .set("Authorization", `Bearer ${token}`)
-      .send({ password: "NewPass123!" }); // Changed from newPassword
+      .send({ password: "NewPass123!" }); 
 
-    console.log("Update Password Response:", res.status, res.body); // Debug
+    // console.log("Update Password Response:", res.status, res.body); // Debug ko lagi haleko
 
     expect(res.status).toBe(200);
     expect(res.body.message).toBe("Password updated successfully");
@@ -124,9 +123,8 @@ describe("Student CRUD Integration", () => {
       .delete(`/api/school/students/${studentId}`)
       .set("Authorization", `Bearer ${token}`);
 
-    console.log("Delete Response:", res.status, res.body); // Debug
 
-    expect(res.status).toBe(204); // Changed from 200
-    // 204 No Content means no body to check
+    expect(res.status).toBe(204);
+
   }, 15000);
 });

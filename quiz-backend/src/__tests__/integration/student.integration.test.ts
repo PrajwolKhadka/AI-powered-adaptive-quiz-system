@@ -12,21 +12,20 @@ let studentId: string;
 beforeAll(async () => {
   await connectDatabaseTest();
     await mongoose.connection.dropDatabase();
-  // Create a real student in the test database
+  // Create a real st
   const hashedPassword = await bcrypt.hash("TestPassword123", 10);
   const student = await Student.create({
     fullName: "Test Student",
     email: "teststudent@example.com",
     password: hashedPassword,
-    className: "10A",
-    schoolId: new mongoose.Types.ObjectId(), // Mock school ID
+    className: 9,
+    schoolId: new mongoose.Types.ObjectId(), 
     isFirstLogin: false,
     role: "STUDENT"
   });
 
   studentId = student._id.toString();
 
-  // Generate token with real student ID and correct role
   studentToken = jwt.sign(
     { id: studentId, role: "STUDENT" },
     process.env.JWT_SECRET!,
@@ -53,7 +52,7 @@ describe("Student Routes", () => {
     expect(res.body.data).toHaveProperty("fullName");
     expect(res.body.data.fullName).toBe("Test Student");
     expect(res.body.data.email).toBe("teststudent@example.com");
-    expect(res.body.data.className).toBe("10A");
+    expect(res.body.data.className).toBe(9);
   }, 15000);
 
   test("Student without token should fail", async () => {
@@ -65,7 +64,7 @@ describe("Student Routes", () => {
   }, 15000);
 
   test("Non-student role should be forbidden", async () => {
-    // Create a token with SCHOOL role instead of STUDENT
+
     const schoolToken = jwt.sign(
       { id: studentId, role: "SCHOOL" },
       process.env.JWT_SECRET!,
