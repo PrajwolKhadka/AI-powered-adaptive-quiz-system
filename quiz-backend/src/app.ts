@@ -6,6 +6,8 @@ import superadminRoutes from "./routes/superadmin.routes";
 import schoolRoutes from "./routes/school.routes";
 import studentRoutes from "./routes/student.routes";
 import resources from "./routes/resources.route";
+import results from "./routes/studentresults.routes";
+import schoolResult from "./routes/schoolresults.routes";
 import "./cron/quiz.cron";
 const app = express();
 
@@ -26,4 +28,7 @@ app.use("/api/school", schoolRoutes);
 app.use("/api/superadmin/admin", superadminRoutes);
 app.use("/api/student", studentRoutes);
 app.use("/api/resources", resources);
+app.use("/api/results/student", results);
+app.use("/api/results/school", schoolResult);
+
 export default app;
