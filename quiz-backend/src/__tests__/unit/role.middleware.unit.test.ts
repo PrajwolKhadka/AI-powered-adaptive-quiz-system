@@ -15,10 +15,6 @@ const makeNext = () => jest.fn() as NextFunction;
 
 const makeReq = (role?: string) =>
   ({ user: role ? { role } : undefined } as any);
-
-// ─────────────────────────────────────────────
-// schoolOnly
-// ─────────────────────────────────────────────
 describe("schoolOnly middleware", () => {
   test("calls next() when role is SCHOOL", () => {
     const req = makeReq("SCHOOL");
@@ -66,9 +62,6 @@ describe("schoolOnly middleware", () => {
   });
 });
 
-// ─────────────────────────────────────────────
-// studentOnly
-// ─────────────────────────────────────────────
 describe("studentOnly middleware", () => {
   test("calls next() when role is STUDENT", () => {
     const req = makeReq("STUDENT");
@@ -116,9 +109,6 @@ describe("studentOnly middleware", () => {
   });
 });
 
-// ─────────────────────────────────────────────
-// requireSuperAdmin
-// ─────────────────────────────────────────────
 describe("requireSuperAdmin middleware", () => {
   test("calls next() when role is SUPERADMIN", () => {
     const req = makeReq("SUPERADMIN");
