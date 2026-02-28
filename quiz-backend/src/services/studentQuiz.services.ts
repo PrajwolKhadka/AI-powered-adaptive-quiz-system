@@ -7,7 +7,10 @@ import { sigmoid } from "../utils/sigmoid";
 import { QuizResultModel } from "../models/quizResult.model";
 import { QuizModel } from "../models/quiz.model";
 import { AIFeedbackService } from "./aiFeedback.service";
+
 const POOL_SIZE = 25;
+const DIFFICULTY_TIERS = [-2, -1, 0, 1, 2];
+const PER_TIER = Math.floor(POOL_SIZE / DIFFICULTY_TIERS.length); // 5 each
 
 export class StudentQuizService {
   private aiService = new AIFeedbackService();
@@ -62,7 +65,7 @@ export class StudentQuizService {
     const quiz = await this.quizRepo.findByIdWithQuestions(dto.quizId);
     if (!quiz) throw new Error("Quiz not found");
 
-    //Quiz expiry check
+    // Quiz expiry check
     const now = new Date();
     if (!quiz.isActive) {
       throw new Error("Quiz is not active");
@@ -78,12 +81,34 @@ export class StudentQuizService {
     );
 
     if (!studentQuizQuestions) {
-      // Shuffle all quiz questions and take POOL_SIZE
-      const allQuestions = (quiz.questionIds as any[]).map((q: any) =>
-        typeof q === "object" ? q._id.toString() : q.toString(),
-      );
-      const shuffled = allQuestions.sort(() => Math.random() - 0.5);
-      studentQuizQuestions = shuffled.slice(0, POOL_SIZE);
+
+      const allQuestions = quiz.questionIds as any[];
+
+      const stratifiedPool: string[] = [];
+      for (const tier of DIFFICULTY_TIERS) {
+        const tierQs = allQuestions
+          .filter((q: any) => difficultyMap[q.difficulty] === tier)
+          .sort(() => Math.random() - 0.5)
+          .slice(0, PER_TIER)
+          .map((q: any) =>
+            typeof q === "object" ? q._id.toString() : q.toString(),
+          );
+        stratifiedPool.push(...tierQs);
+      }
+
+      const stratifiedIds = new Set(stratifiedPool);
+      const remaining = allQuestions
+        .filter((q: any) => {
+          const id = typeof q === "object" ? q._id.toString() : q.toString();
+          return !stratifiedIds.has(id);
+        })
+        .sort(() => Math.random() - 0.5)
+        .slice(0, POOL_SIZE - stratifiedPool.length)
+        .map((q: any) =>
+          typeof q === "object" ? q._id.toString() : q.toString(),
+        );
+
+      studentQuizQuestions = [...stratifiedPool, ...remaining];
 
       await this.studentAnswerRepo.setQuizQuestionPool(
         studentId,
@@ -102,77 +127,7 @@ export class StudentQuizService {
     ).length;
 
     if (poolAnsweredCount >= studentQuizQuestions.length) {
-      const previousAnswers = await this.studentAnswerRepo.findByStudentAndQuiz(
-        studentId,
-        dto.quizId,
-      );
-
-      const uniqueAnswers = this.deduplicateAnswers(previousAnswers);
-
-      const totalQuestions = uniqueAnswers.length;
-      const correctAnswers = uniqueAnswers.filter((a) => a.correct).length;
-      const wrongAnswers = totalQuestions - correctAnswers;
-      const timeTaken = uniqueAnswers.reduce((sum, a) => sum + a.timeTaken, 0);
-
-      // const aiFeedback = this.generateFeedback(uniqueAnswers);
-      //AI
-      const subjectMap: Record<string, { correct: number; total: number }> = {};
-
-      for (const a of uniqueAnswers) {
-        if (!subjectMap[a.subject]) {
-          subjectMap[a.subject] = { correct: 0, total: 0 };
-        }
-        subjectMap[a.subject].total++;
-        if (a.correct) subjectMap[a.subject].correct++;
-      }
-
-      const weakSubjects = Object.entries(subjectMap)
-        .filter(([, v]) => v.correct / v.total < 0.5)
-        .map(([subject]) => subject);
-
-      const avgTime = totalQuestions > 0 ? timeTaken / totalQuestions : 0;
-
-      let aiFeedback = "AI feedback unavailable.";
-
-      try {
-        aiFeedback = await this.aiService.generateQuizFeedback({
-          totalQuestions,
-          correctAnswers,
-          wrongAnswers,
-          weakSubjects,
-          avgTime,
-        });
-      } catch (error) {
-        console.error("Gemini Error:", error);
-      }
-
-      await QuizResultModel.findOneAndUpdate(
-        { studentId, quizId: dto.quizId },
-        {
-          studentId,
-          quizId: dto.quizId,
-          totalQuestions,
-          correctAnswers,
-          wrongAnswers,
-          timeTaken,
-          aiFeedback,
-          questionStats: uniqueAnswers.map((a) => ({
-            questionId: a.questionId,
-            correct: a.correct,
-            timeTaken: a.timeTaken,
-          })),
-        },
-        { upsert: true, new: true },
-      );
-
-      return {
-        done: true,
-        totalQuestions,
-        correctAnswers,
-        wrongAnswers,
-        timeTakenSeconds: timeTaken,
-        aiFeedback,
-      };
+      return await this.finalizeQuiz(studentId, dto.quizId);
     }
 
     const previousAnswers = await this.studentAnswerRepo.findByStudentAndQuiz(
@@ -191,15 +146,14 @@ export class StudentQuizService {
       throw new Error("No remaining questions found");
     }
 
-    //Adaptive selection via Item Response Theory
+    // Adaptive selection via Item Response Theory
     const totalAttempts = uniquePreviousAnswers.length;
-    const totalCorrect = uniquePreviousAnswers.filter((a) => a.correct).length;
-    // const userAccuracy = totalAttempts > 0 ? totalCorrect / totalAttempts : 0.5;
+
     const userAccuracy = (() => {
       if (uniquePreviousAnswers.length === 0) return 0.5;
-      // Weight recent answers
+      // Weight recent answers more heavily
       const weighted = uniquePreviousAnswers.reduce((sum, a, i) => {
-        const weight = i + 1; // later answers get higher weight
+        const weight = i + 1;
         return sum + (a.correct ? weight : 0);
       }, 0);
       const totalWeight = uniquePreviousAnswers.reduce(
@@ -208,80 +162,30 @@ export class StudentQuizService {
       );
       return weighted / totalWeight;
     })();
+
     const recentAnswers = uniquePreviousAnswers.slice(-5);
     const recentCorrect = recentAnswers.filter((a) => a.correct).length;
     const recentAccuracy =
       recentAnswers.length > 0 ? recentCorrect / recentAnswers.length : 0.5;
 
-    // let candidateQuestions = remainingQuestions;
+    //mastery or floor detection
+    if (recentAnswers.length >= 5) {
+      const allCorrect = recentAnswers.every((a) => a.correct);
+      const allAtFloor = recentAnswers.every((a) => a.difficulty <= -1);
+      const allWrong = recentAnswers.every((a) => !a.correct);
+      const allAtCeiling = recentAnswers.every((a) => a.difficulty >= 1);
 
-    // if (recentAnswers.length === 3) {
-    //   if (recentCorrect === 0) {
-    //     const lastDifficulty =
-    //       recentAnswers[recentAnswers.length - 1].difficulty;
-    //     if (lastDifficulty > -1) {
-    //       const maxDiff = lastDifficulty - 1;
-    //       candidateQuestions = remainingQuestions.filter((q) => {
-    //         const diff = difficultyMap[q.difficulty] ?? 0;
-    //         return diff <= maxDiff;
-    //       });
-    //       console.log(
-    //         `3 wrong streak → forcing easier (max difficulty ${maxDiff})`,
-    //       );
-    //     }
-    //   } else if (recentCorrect === 3) {
-    //     const lastDifficulty =
-    //       recentAnswers[recentAnswers.length - 1].difficulty;
-    //     if (lastDifficulty < 2) {
-    //       const targetDiff = lastDifficulty + 1;
-    //       candidateQuestions = remainingQuestions.filter((q) => {
-    //         const diff = difficultyMap[q.difficulty] ?? 0;
-    //         return diff >= targetDiff;
-    //       });
-    //       console.log(`3 correct streak at Easy → forcing harder`);
-    //     }
-    //   }
-    // }
+      if (allCorrect && allAtFloor && userAccuracy > 0.85) {
+        console.log("Mastery detected — ending quiz early");
+        return await this.finalizeQuiz(studentId, dto.quizId);
+      }
 
-    // if (candidateQuestions.length === 0) {
-    //   candidateQuestions = remainingQuestions;
-    // }
-    // const avgTime =
-    //   totalAttempts > 0
-    //     ? uniquePreviousAnswers.reduce((sum, a) => sum + a.timeTaken, 0) /
-    //       totalAttempts
-    //     : 10;
+      if (allWrong && allAtCeiling) {
+        console.log("Student overwhelmed — ending quiz early");
+        return await this.finalizeQuiz(studentId, dto.quizId);
+      }
+    }
 
-    // // let bestQuestion = remainingQuestions[0];
-    // let bestQuestion = candidateQuestions[0];
-
-    // let closestDistance = Infinity;
-
-    // for (const q of candidateQuestions) {
-    //   // FIX: q is now a populated object with .subject and .difficulty
-    //   // because we use findByIdWithQuestions and filter from quiz.questionIds
-    //   // const topicAnswers = uniquePreviousAnswers.filter(
-    //   //   (a) => a.subject === q.subject
-    //   // );
-
-    //   // const topicAccuracy =
-    //   //   topicAnswers.length > 0
-    //   //     ? topicAnswers.filter((a) => a.correct).length / topicAnswers.length
-    //   //     : 0.5;
-
-    //   const difficulty = difficultyMap[q.difficulty] ?? 0;
-
-    //   // IRT-inspired probability: target 0.55 (slightly challenging)
-    //   const z = -3 * difficulty + 4 * userAccuracy + 2 * recentAccuracy;
-
-    //   const probability = sigmoid(z);
-    //   const distance = Math.abs(probability - 0.65);
-
-    //   if (distance < closestDistance) {
-    //     closestDistance = distance;
-    //     bestQuestion = q;
-    //   }
-    // }
     const avgTime =
       totalAttempts > 0
         ? uniquePreviousAnswers.reduce((sum, a) => sum + a.timeTaken, 0) /
@@ -302,13 +206,11 @@ export class StudentQuizService {
 
     for (const q of remainingQuestions) {
       const difficulty = difficultyMap[q.difficulty] ?? 0;
-
-      // Apply bias
       const adjustedDifficulty = difficulty - difficultyBias;
 
-      const z = -3 * adjustedDifficulty + 4 * userAccuracy + 2 * recentAccuracy;
+      const z =
+        -3 * adjustedDifficulty + 4 * userAccuracy + 2 * recentAccuracy;
       const probability = sigmoid(z);
-
       const distance = Math.abs(probability - 0.7);
 
       if (distance < closestDistance) {
@@ -316,6 +218,17 @@ export class StudentQuizService {
         bestQuestion = q;
       }
     }
+
+    if (closestDistance > 0.4) {
+      console.warn(
+        `IRT selection degraded (closestDistance=${closestDistance.toFixed(2)}) — falling back to random remaining question`,
+      );
+      bestQuestion =
+        remainingQuestions[
+          Math.floor(Math.random() * remainingQuestions.length)
+        ];
+    }
+
     const rawQuestion: any = bestQuestion.toObject
       ? bestQuestion.toObject()
       : bestQuestion;
@@ -335,6 +248,76 @@ export class StudentQuizService {
     };
 
     return { question: questionForStudent };
+  }
+
+  private async finalizeQuiz(studentId: string, quizId: string) {
+    const previousAnswers = await this.studentAnswerRepo.findByStudentAndQuiz(
+      studentId,
+      quizId,
+    );
+
+    const uniqueAnswers = this.deduplicateAnswers(previousAnswers);
+
+    const totalQuestions = uniqueAnswers.length;
+    const correctAnswers = uniqueAnswers.filter((a) => a.correct).length;
+    const wrongAnswers = totalQuestions - correctAnswers;
+    const timeTaken = uniqueAnswers.reduce((sum, a) => sum + a.timeTaken, 0);
+
+    const subjectMap: Record<string, { correct: number; total: number }> = {};
+    for (const a of uniqueAnswers) {
+      if (!subjectMap[a.subject]) {
+        subjectMap[a.subject] = { correct: 0, total: 0 };
+      }
+      subjectMap[a.subject].total++;
+      if (a.correct) subjectMap[a.subject].correct++;
+    }
+
+    const weakSubjects = Object.entries(subjectMap)
+      .filter(([, v]) => v.correct / v.total < 0.5)
+      .map(([subject]) => subject);
+
+    const avgTime = totalQuestions > 0 ? timeTaken / totalQuestions : 0;
+
+    let aiFeedback = "AI feedback unavailable.";
+    try {
+      aiFeedback = await this.aiService.generateQuizFeedback({
+        totalQuestions,
+        correctAnswers,
+        wrongAnswers,
+        weakSubjects,
+        avgTime,
+      });
+    } catch (error) {
+      console.error("Gemini Error:", error);
+    }
+
+    await QuizResultModel.findOneAndUpdate(
+      { studentId, quizId },
+      {
+        studentId,
+        quizId,
+        totalQuestions,
+        correctAnswers,
+        wrongAnswers,
+        timeTaken,
+        aiFeedback,
+        questionStats: uniqueAnswers.map((a) => ({
+          questionId: a.questionId,
+          correct: a.correct,
+          timeTaken: a.timeTaken,
+        })),
+      },
+      { upsert: true, new: true },
+    );
+
+    return {
+      done: true,
+      totalQuestions,
+      correctAnswers,
+      wrongAnswers,
+      timeTakenSeconds: timeTaken,
+      aiFeedback,
+    };
   }
 
   private deduplicateAnswers(answers: any[]): any[] {
