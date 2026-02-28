@@ -1,6 +1,4 @@
 import { StudentQuizService } from "../../services/studentQuiz.services";
-
-
 jest.mock("../../repositories/studentAnswer.repository");
 jest.mock("../../repositories/quiz.repository");
 jest.mock("../../repositories/question.repository");
@@ -54,6 +52,20 @@ const makeQuiz = (overrides = {}) => ({
   questionIds: [makeQuestion()],
   ...overrides,
 });
+
+function assertHasQuestion(
+  result: unknown
+): asserts result is { question: Record<string, any> } {
+  if (
+    typeof result !== "object" ||
+    result === null ||
+    !("question" in result)
+  ) {
+    throw new Error(
+      `Expected result to have a 'question' property, but got: ${JSON.stringify(result)}`
+    );
+  }
+}
 
 let service: StudentQuizService;
 
@@ -125,7 +137,7 @@ describe("StudentQuizService.submitAnswer", () => {
     expect(mockStudentAnswerRepo.create).toHaveBeenCalledWith(
       expect.objectContaining({
         subject: "Science",
-        difficulty: 1, 
+        difficulty: 1,
         timeTaken: 8,
       })
     );
@@ -197,7 +209,7 @@ describe("StudentQuizService.getNextQuestion", () => {
       makeQuiz({
         isActive: true,
         startTime: new Date(Date.now() - 20 * 60 * 1000),
-        endTime: new Date(Date.now() - 5 * 60 * 1000), // expired
+        endTime: new Date(Date.now() - 5 * 60 * 1000),
       })
     );
     mockQuizRepo.updateById.mockResolvedValue({});
@@ -232,14 +244,15 @@ describe("StudentQuizService.getNextQuestion", () => {
     mockQuizRepo.findByIdWithQuestions.mockResolvedValue(
       makeQuiz({ questionIds: [q1, q2] })
     );
-    mockStudentAnswerRepo.getQuizQuestionPool.mockResolvedValue(null); 
+    mockStudentAnswerRepo.getQuizQuestionPool.mockResolvedValue(null);
     mockStudentAnswerRepo.setQuizQuestionPool.mockResolvedValue({});
     mockStudentAnswerRepo.getAnsweredQuestionIds.mockResolvedValue([]);
     mockStudentAnswerRepo.findByStudentAndQuiz.mockResolvedValue([]);
 
     const result = await service.getNextQuestion("student1", dto);
 
-    expect(result).toHaveProperty("question");
+    assertHasQuestion(result);
+
     expect(result.question).toHaveProperty("_id");
     expect(result.question).toHaveProperty("text");
     expect(result.question).toHaveProperty("options");
@@ -261,6 +274,8 @@ describe("StudentQuizService.getNextQuestion", () => {
 
     const result = await service.getNextQuestion("student1", dto);
 
-    expect(result.question!.progress.answered).toBe(1);
+    assertHasQuestion(result);
+
+    expect(result.question.progress.answered).toBe(1);
   });
 });
