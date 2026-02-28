@@ -180,7 +180,7 @@ export default function StudentResultsPage() {
         )}
 
         {/* Performance Graph */}
-        {chartData.length > 1 && (
+        {chartData.length > 0 && (
           <div className="bg-white rounded-2xl shadow p-6">
             <h2 className="text-sm font-semibold text-gray-700 mb-6">
               Accuracy Over Time
