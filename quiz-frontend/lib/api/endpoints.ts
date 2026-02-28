@@ -20,6 +20,7 @@ export const API = {
     UPDATE_QUESTION: "/api/school/questions",
     DELETE_QUESTION: "/api/school/questions",
     DELETE_BATCH_QUESTIONS: "/api/school/questions/delete-batch",
+    DELETE_ALL_QUESTIONS: "/api/school/questions/delete-all",
     TOGGLE: "/api/school/quiz/toggle",
     NEXT_QUESTION: "/api/student/next-question",
     SUBMIT_ANSWER: "/api/student/submit-answer",

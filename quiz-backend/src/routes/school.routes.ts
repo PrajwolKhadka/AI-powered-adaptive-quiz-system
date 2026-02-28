@@ -10,7 +10,7 @@
   import { authenticate } from "../middlewares/auth.middleware";
   import { schoolOnly } from "../middlewares/role.middleware";
   import { uploadCSV } from "../middlewares/csv_uploads.middleware";
-  import { deleteBatchQuestions, deleteQuestion, getQuestions, updateQuestion, uploadQuestionCSV } from "../controllers/question.controller";
+  import { deleteAllQuestions, deleteBatchQuestions, deleteQuestion, getQuestions, updateQuestion, uploadQuestionCSV } from "../controllers/question.controller";
   import { uploads } from "../middlewares/uploads.middleware";
   import { uploadStudentProfilePicture } from "../controllers/student.controller";
   const router = Router();
@@ -30,6 +30,7 @@
   router.post("/upload-csv", authenticate,schoolOnly, uploadCSV.single("file"), uploadQuestionCSV);
   router.get("/questions", authenticate, schoolOnly, getQuestions);
   router.put("/questions/:id", authenticate, schoolOnly, updateQuestion);
+  router.delete("/questions/delete-all", authenticate, schoolOnly, deleteAllQuestions);
   router.delete("/questions/:id", authenticate, schoolOnly, deleteQuestion);
   router.post("/questions/delete-batch", authenticate, schoolOnly, deleteBatchQuestions);
 

@@ -7,6 +7,9 @@ import UploadCSV from "./_components/UploadCSV";
 import QuizTable from "./_components/QuizTable";
 import EditQuestionModal from "./_components/EditQuestion";
 import EnableQuizModal from "./_components/EnableQuizModal";
+import toast from "react-hot-toast";
+
+console.log("QuizAPI methods:", Object.keys(QuizAPI));
 export interface Question {
   _id: string;
   questionNumber: number;
@@ -46,19 +49,102 @@ export default function QuizzesPage() {
     fetchQuestions();
   }, []);
 
-  const handleBatchDelete = async () => {
-    if (!selectedIds.length) return alert("Select questions first!");
-    if (!confirm("Are you sure you want to delete selected questions?")) return;
+  // const handleDeleteAll = async () => {
+  //   if (questions.length === 0) {
+  //     toast.error("No questions to delete");
+  //     return;
+  //   }
 
-    try {
-      await QuizAPI.deleteBatchQuestions(selectedIds);
-      setSelectedIds([]);
-      fetchQuestions();
-    } catch (err) {
-      console.error(err);
-    }
+  //   const confirmed = confirm(
+  //     "Are you sure you want to delete ALL questions? This cannot be undone.",
+  //   );
+
+  //   if (!confirmed) return;
+
+  //   try {
+  //     await QuizAPI.deleteAllQuestions();
+
+  //     setSelectedIds([]);
+  //     setCurrentPage(1);
+  //     fetchQuestions();
+  //   } catch (err) {
+  //     console.error(err);
+  //     toast.error("Failed to delete all questions");
+  //   }
+  // };
+
+  // const handleBatchDelete = async () => {
+  //   if (!selectedIds.length) return toast.error("Select questions first!");
+  //   if (!confirm("Are you sure you want to delete selected questions?")) return;
+
+  //   try {
+  //     await QuizAPI.deleteBatchQuestions(selectedIds);
+  //     setSelectedIds([]);
+  //     fetchQuestions();
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
+  // };
+  const confirmToast = (message: string, onConfirm: () => void) => {
+    toast(
+      (t) => (
+        <div className="flex flex-col gap-2">
+          <span>{message}</span>
+          <div className="flex gap-2">
+            <button
+              onClick={() => {
+                toast.dismiss(t.id);
+                onConfirm();
+              }}
+              className="bg-red-600 text-white px-3 py-1 rounded text-sm"
+            >
+              Confirm
+            </button>
+            <button
+              onClick={() => toast.dismiss(t.id)}
+              className="bg-gray-300 text-black px-3 py-1 rounded text-sm"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      ),
+      { duration: Infinity },
+    );
   };
 
+  const handleDeleteAll = async () => {
+    if (questions.length === 0) return toast.error("No questions to delete");
+
+    confirmToast("Delete ALL questions? This cannot be undone.", async () => {
+      try {
+        await QuizAPI.deleteAllQuestions();
+        setSelectedIds([]);
+        setCurrentPage(1);
+        fetchQuestions();
+        toast.success("All questions deleted");
+      } catch (err) {
+        console.error(err);
+        toast.error("Failed to delete all questions");
+      }
+    });
+  };
+
+  const handleBatchDelete = async () => {
+    if (!selectedIds.length) return toast.error("Select questions first!");
+
+    confirmToast("Delete selected questions?", async () => {
+      try {
+        await QuizAPI.deleteBatchQuestions(selectedIds);
+        setSelectedIds([]);
+        fetchQuestions();
+        toast.success("Selected questions deleted");
+      } catch (err) {
+        console.error(err);
+        toast.error("Failed to delete selected questions");
+      }
+    });
+  };
   const handleSaveEdit = async (question: Question) => {
     try {
       await QuizAPI.updateQuestion(question);
@@ -102,6 +188,14 @@ export default function QuizzesPage() {
         {/* <button className="ml-auto bg-green-600 text-white px-4 py-2 rounded">
           Enable Quiz
         </button> */}
+        <button
+          onClick={handleDeleteAll}
+          disabled={questions.length === 0}
+          className="bg-red-800 text-white px-4 py-2 rounded disabled:opacity-50"
+        >
+          Delete All
+        </button>
+
         <button
           className="ml-auto bg-green-600 text-white px-4 py-2 rounded"
           onClick={() => setEnableModalOpen(true)}

@@ -111,6 +111,14 @@ export const QuestionService = {
     });
     return result.deletedCount;
   },
+
+  async deleteAllQuestionsBySchool(schoolId: string) {
+  const result = await QuestionModel.deleteMany({
+    schoolId: schoolId,
+  });
+
+  return result.deletedCount;
+}
 };
 
 

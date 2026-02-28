@@ -31,6 +31,11 @@ export const QuizAPI = {
     const res = await axiosInstance.post(API.QUIZ.DELETE_BATCH_QUESTIONS, { questionIds });
     return res.data;
   },
+  
+  deleteAllQuestions: async () => {
+    const res = await axiosInstance.delete(API.QUIZ.DELETE_ALL_QUESTIONS);
+    return res.data;
+  },
 
   toggleQuiz: async (data: { quizId?: string; classLevel: number; subject: string; durationMinutes: number; isActive: boolean }) => {
     const res = await axiosInstance.post(API.QUIZ.TOGGLE, data);
