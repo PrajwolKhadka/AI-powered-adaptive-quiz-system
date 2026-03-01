@@ -1,8 +1,5 @@
-// src/__tests__/unit/services/auth.service.test.ts
-
 import { AuthService } from "../../services/auth.services";
 
-// ── Mock all dependencies ─────────────────────────────────────────────────────
 jest.mock("../../repositories/school.repository");
 jest.mock("../../repositories/student.repository");
 jest.mock("../../models/student.model");

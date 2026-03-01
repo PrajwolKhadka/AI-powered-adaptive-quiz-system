@@ -5,7 +5,7 @@ import { QuizResultDetailDTO, QuizResultSummaryDTO } from "../dtos/results.dto";
 export class SchoolResultsService {
   private quizResultRepo = new QuizResultRepository();
 
-  // Helper to build accuracy
+
   private calcAccuracy(correct: number, total: number): number {
     if (total === 0) return 0;
     return parseFloat(((correct / total) * 100).toFixed(1));

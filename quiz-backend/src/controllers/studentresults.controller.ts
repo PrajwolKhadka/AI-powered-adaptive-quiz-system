@@ -6,7 +6,6 @@ const service = new StudentResultsService();
 
 export class StudentResultsController {
 
-  // GET /student/results — full quiz history + graph data
   async getMyHistory(req: AuthRequest, res: Response) {
     try {
       const studentId = req.user!.id;
@@ -20,7 +19,6 @@ export class StudentResultsController {
     }
   }
 
-  // GET /student/results/:quizId — specific quiz result + AI feedback
   async getMyResultDetail(req: AuthRequest, res: Response) {
     try {
       const studentId = req.user!.id;

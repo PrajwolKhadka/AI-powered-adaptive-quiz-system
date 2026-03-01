@@ -1,5 +1,3 @@
-// src/__tests__/unit/middlewares/auth.middleware.test.ts
-
 import { authenticate } from "../../middlewares/auth.middleware";
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";

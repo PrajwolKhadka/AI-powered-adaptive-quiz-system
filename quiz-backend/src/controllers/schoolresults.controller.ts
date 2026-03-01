@@ -6,7 +6,6 @@ const service = new SchoolResultsService();
 
 export class SchoolResultsController {
 
-  // GET /school/quizzes
   async getSchoolQuizzes(req: AuthRequest, res: Response) {
     try {
       const schoolId = req.user!.id;
@@ -17,7 +16,6 @@ export class SchoolResultsController {
     }
   }
 
-  // GET /school/results — all results across all quizzes
   async getAllResults(req: AuthRequest, res: Response) {
     try {
       const schoolId = req.user!.id;
@@ -28,7 +26,6 @@ export class SchoolResultsController {
     }
   }
 
-  // GET /school/quizzes/:quizId/results — bulk results for one quiz
   async getQuizResults(req: AuthRequest, res: Response) {
     try {
       const schoolId = req.user!.id;
@@ -41,7 +38,6 @@ export class SchoolResultsController {
     }
   }
 
-  // GET /school/quizzes/:quizId/results/:studentId — individual student detail
   async getStudentResultDetail(req: AuthRequest, res: Response) {
     try {
       const schoolId = req.user!.id;
